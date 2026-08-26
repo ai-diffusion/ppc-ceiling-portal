@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · PPC Portal Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --ink:#0F1216;--ink-2:#171B21;--panel:#1C222A;--line:#2A313B;--line-2:#3A424E;
+  --text:#E6E9ED;--text-soft:#9AA3AF;--gold:#D9A15B;--walnut:#B57A3C;--ok:#4FAE7A;--warn:#D98A4A;--danger:#D9694A;
+  --disp:'Space Grotesk',sans-serif;--body:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--ink);color:var(--text);font-family:var(--body);font-size:14px;-webkit-font-smoothing:antialiased;}
+button{font-family:inherit;cursor:pointer;}
+input{font-family:inherit;}
+
+.gate{position:fixed;inset:0;z-index:100;background:var(--ink);display:flex;align-items:center;justify-content:center;padding:20px;}
+.gate.hidden{display:none;}
+.gate-card{background:var(--panel);width:min(400px,100%);border:1px solid var(--line-2);padding:0;}
+.gate-head{background:var(--ink-2);padding:20px 24px;border-bottom:1px solid var(--line-2);}
+.gate-head h1{font-family:var(--disp);font-size:16px;margin:0;letter-spacing:.02em;}
+.gate-head p{font-family:var(--mono);font-size:10.5px;color:var(--text-soft);margin:4px 0 0;letter-spacing:.05em;text-transform:uppercase;}
+.gate-body{padding:24px;}
+.gate-field{margin-bottom:14px;}
+.gate-field label{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+.gate-field input{width:100%;padding:11px 12px;background:var(--ink);border:1px solid var(--line-2);color:var(--text);font-size:14px;}
+.gate-field input:focus{outline:none;border-color:var(--walnut);}
+.gate-btn{width:100%;padding:13px;background:var(--walnut);color:#fff;border:none;font-family:var(--disp);font-weight:600;font-size:14px;}
+.gate-msg{font-family:var(--mono);font-size:11.5px;margin-top:12px;text-align:center;min-height:16px;}
+.gate-msg.err{color:var(--danger);}
+
+.topbar{position:sticky;top:0;z-index:20;background:var(--ink-2);border-bottom:1px solid var(--line-2);display:flex;align-items:center;justify-content:space-between;padding:12px 24px;}
+.topbar h1{font-family:var(--disp);font-size:15px;margin:0;letter-spacing:.02em;}
+.topbar h1 span{color:var(--gold);}
+.topbar-right{display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:11px;color:var(--text-soft);}
+.refresh-btn,.logout{background:transparent;border:1px solid var(--line-2);color:var(--text);padding:6px 12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;}
+.refresh-btn:hover,.logout:hover{border-color:var(--walnut);}
+
+.wrap{max-width:1400px;margin:0 auto;padding:24px;}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+.kpi{background:var(--panel);border:1px solid var(--line);padding:16px 18px;}
+.kpi-label{font-family:var(--mono);font-size:10px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em;}
+.kpi-value{font-family:var(--disp);font-size:26px;font-weight:600;margin-top:6px;}
+.kpi-sub{font-family:var(--mono);font-size:10.5px;color:var(--text-soft);margin-top:2px;}
+
+.section{background:var(--panel);border:1px solid var(--line);margin-bottom:22px;}
+.section-head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+.section-head h2{font-family:var(--disp);font-size:14px;margin:0;text-transform:uppercase;letter-spacing:.04em;}
+.section-head .hint{font-family:var(--mono);font-size:10.5px;color:var(--text-soft);}
+.section-body{padding:8px 18px 18px;overflow-x:auto;}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th{text-align:left;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-soft);padding:9px 10px;border-bottom:1px solid var(--line-2);}
+td{padding:9px 10px;border-bottom:1px solid var(--line);}
+tr:hover td{background:var(--ink-2);}
+.bar{height:7px;background:var(--line-2);position:relative;min-width:60px;}
+.bar-fill{height:100%;background:var(--walnut);}
+.tag{display:inline-block;font-family:var(--mono);font-size:10px;padding:2px 7px;background:var(--ink);border:1px solid var(--line-2);color:var(--text-soft);}
+.swatch-mini{width:26px;height:26px;background-size:cover;background-position:center;display:inline-block;vertical-align:middle;margin-right:8px;border:1px solid var(--line-2);}
+.email-cell{font-family:var(--mono);font-size:11.5px;}
+.num{font-family:var(--mono);font-weight:600;}
+.muted{color:var(--text-soft);}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr;}}
+
+/* heatmap */
+.heat-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.heat-select{background:var(--ink);border:1px solid var(--line-2);color:var(--text);padding:7px 10px;font-family:var(--mono);font-size:11px;}
+.heat-stage{position:relative;width:100%;aspect-ratio:16/10;background:var(--ink);border:1px solid var(--line-2);overflow:hidden;}
+#heatCanvas{position:absolute;inset:0;width:100%;height:100%;}
+.heat-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--text-soft);}
+
+.customer-row{cursor:pointer;}
+.customer-row.active td{background:var(--ink-2);border-left:2px solid var(--walnut);}
+.loading{font-family:var(--mono);font-size:12px;color:var(--text-soft);padding:20px;text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-head"><h1>Admin Dashboard</h1><p>PPC Order Portal · Analytics</p></div>
+    <div class="gate-body">
+      <div class="gate-field"><label>Admin email</label><input id="gEmail" type="email" placeholder="admin@yourcompany.com"></div>
+      <div class="gate-field"><label>Password</label><input id="gPass" type="password" placeholder="••••••••"></div>
+      <button class="gate-btn" id="gBtn">Sign in</button>
+      <div class="gate-msg" id="gMsg"></div>
+    </div>
+  </div>
+</div>
+
+<div class="topbar" id="topbar" style="display:none;">
+  <h1>PPC Portal · <span>Admin Analytics</span></h1>
+  <div class="topbar-right">
+    <span id="whoami">—</span>
+    <button class="refresh-btn" id="refreshBtn">↻ Refresh</button>
+    <button class="logout" id="logoutBtn">Sign out</button>
+  </div>
+</div>
+
+<div class="wrap" id="dash" style="display:none;">
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <div class="section">
+    <div class="section-head"><h2>Customers &amp; Engagement</h2><span class="hint">click a row to load its mouse heatmap</span></div>
+    <div class="section-body">
+      <table id="custTable"><thead><tr>
+        <th>Customer</th><th>Company</th><th>Sessions</th><th>Active time</th><th>Designs viewed</th><th>Zooms</th><th>Added</th><th>Orders</th><th>Last seen</th>
+      </tr></thead><tbody id="custBody"><tr><td colspan="9" class="loading">Loading…</td></tr></tbody></table>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="section">
+      <div class="section-head"><h2>Most-Viewed Designs</h2><span class="hint">by design_view + color_view</span></div>
+      <div class="section-body"><table id="designTable"><thead><tr><th>Design</th><th>Views</th><th>Interest</th></tr></thead><tbody id="designBody"></tbody></table></div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>Most-Added Colours</h2><span class="hint">add_to_order events</span></div>
+      <div class="section-body"><table id="colorTable"><thead><tr><th>Colour</th><th>Adds</th><th>Rolls</th></tr></thead><tbody id="colorBody"></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>Mouse-Movement Heatmap</h2><span class="hint" id="heatHint">select a customer above</span></div>
+    <div class="section-body">
+      <div class="heat-controls">
+        <span class="muted" style="font-family:var(--mono);font-size:11px;">Customer:</span>
+        <select class="heat-select" id="heatCustomer"><option value="">—</option></select>
+      </div>
+      <div class="heat-stage" id="heatStage">
+        <canvas id="heatCanvas"></canvas>
+        <div class="heat-empty" id="heatEmpty">Select a customer to render their mouse-movement density.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>Orders</h2><span class="hint">submitted through the portal</span></div>
+    <div class="section-body">
+      <table id="orderTable"><thead><tr>
+        <th>When</th><th>Customer</th><th>Type</th><th>Rolls</th><th>Tiles</th><th>Sq ft</th><th>Items</th>
+      </tr></thead><tbody id="orderBody"></tbody></table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>Recent Activity Feed</h2><span class="hint">last 60 events</span></div>
+    <div class="section-body">
+      <table id="feedTable"><thead><tr><th>Time</th><th>Customer</th><th>Event</th><th>Design</th><th>Detail</th></tr></thead><tbody id="feedBody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL="https://jzofcuonpbudcwvwwymu.supabase.co";
+const SUPA_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6b2ZjdW9ucGJ1ZGN3dnd3eW11Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3MzM5NzQsImV4cCI6MjEwMzMwOTk3NH0.sM4NK2ja9nhdSBc4mQA5ELl_g6GZZZ2AsHGzTTlHVyA";
+let DESIGN_THUMBS={}; // {mcode: thumbUrl}
+const sb=window.supabase.createClient(SUPA_URL,SUPA_ANON);
+window.__thumbsReady=fetch('https://jzofcuonpbudcwvwwymu.supabase.co/storage/v1/object/public/designs/data/thumbs.json').then(r=>r.json()).then(d=>{DESIGN_THUMBS=d;}).catch(e=>console.error('thumbs load',e));
+
+let session=null, cache={events:[],orders:[],items:[],profiles:[]};
+
+function fmt(n){ return Math.round(n||0).toLocaleString('en-US'); }
+function fmtTime(ms){ if(!ms)return '0s'; const s=Math.round(ms/1000); if(s<60)return s+'s'; const m=Math.floor(s/60); return m+'m '+(s%60)+'s'; }
+function ago(ts){ const d=(Date.now()-new Date(ts).getTime())/1000; if(d<60)return Math.round(d)+'s ago'; if(d<3600)return Math.round(d/60)+'m ago'; if(d<86400)return Math.round(d/3600)+'h ago'; return Math.round(d/86400)+'d ago'; }
+
+// ==== AUTH ====
+document.getElementById('gBtn').addEventListener('click',doLogin);
+document.getElementById('gPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+async function doLogin(){
+  const email=document.getElementById('gEmail').value.trim();
+  const pass=document.getElementById('gPass').value;
+  const msg=document.getElementById('gMsg'); msg.className='gate-msg'; msg.textContent='Working…';
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+    if(error) throw error;
+    // check admin flag
+    const {data:prof}=await sb.from('profiles').select('is_admin').eq('id',data.session.user.id).single();
+    if(!prof||!prof.is_admin){ await sb.auth.signOut(); throw new Error('This account is not an admin.'); }
+    session=data.session; onAuthed();
+  }catch(e){ msg.className='gate-msg err'; msg.textContent=e.message||'Login failed.'; }
+}
+function onAuthed(){
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('dash').style.display='block';
+  document.getElementById('whoami').textContent=session.user.email;
+  (window.__thumbsReady||Promise.resolve()).then(loadAll);
+}
+document.getElementById('logoutBtn').addEventListener('click',async()=>{await sb.auth.signOut();location.reload();});
+document.getElementById('refreshBtn').addEventListener('click',loadAll);
+(async()=>{ const {data}=await sb.auth.getSession(); if(data.session){
+  const {data:prof}=await sb.from('profiles').select('is_admin').eq('id',data.session.user.id).single();
+  if(prof&&prof.is_admin){ session=data.session; onAuthed(); }
+}})();
+
+// ==== DATA ====
+async function loadAll(){
+  const [ev,or_,it,pr]=await Promise.all([
+    sb.from('analytics_events').select('*').order('created_at',{ascending:false}).limit(5000),
+    sb.from('orders').select('*').order('created_at',{ascending:false}).limit(1000),
+    sb.from('order_items').select('*').limit(5000),
+    sb.from('profiles').select('*').limit(1000)
+  ]);
+  cache.events=ev.data||[]; cache.orders=or_.data||[]; cache.items=it.data||[]; cache.profiles=pr.data||[];
+  renderKPIs(); renderCustomers(); renderDesigns(); renderColors(); renderOrders(); renderFeed(); populateHeatSelect();
+}
+function profileFor(uid){ return cache.profiles.find(p=>p.id===uid); }
+function emailFor(uid){ const p=profileFor(uid); return p?(p.email||p.full_name||uid.slice(0,8)):(uid?uid.slice(0,8):'anon'); }
+
+function renderKPIs(){
+  const customers=cache.profiles.filter(p=>!p.is_admin).length;
+  const totalEvents=cache.events.length;
+  const orders=cache.orders.length;
+  const totalRolls=cache.orders.reduce((s,o)=>s+Number(o.total_rolls||0),0);
+  const totalTiles=cache.orders.reduce((s,o)=>s+Number(o.total_tiles||0),0);
+  // total active time from heartbeats (max active_ms per session)
+  const bySess={};
+  cache.events.filter(e=>e.event_type==='heartbeat').forEach(e=>{
+    const a=e.meta?.active_ms||0; if(!bySess[e.session_id]||a>bySess[e.session_id])bySess[e.session_id]=a;
+  });
+  const totalActive=Object.values(bySess).reduce((s,v)=>s+v,0);
+  const kpis=[
+    ['Customers',fmt(customers),'registered'],
+    ['Orders',fmt(orders),fmt(totalRolls)+' rolls · '+fmt(totalTiles)+' tiles'],
+    ['Design views',fmt(cache.events.filter(e=>e.event_type==='design_view').length),'opened detail'],
+    ['Total events',fmt(totalEvents),'tracked'],
+    ['Engaged time',fmtTime(totalActive),'across sessions'],
+    ['Add-to-order',fmt(cache.events.filter(e=>e.event_type==='add_to_order').length),'events'],
+  ];
+  document.getElementById('kpiRow').innerHTML=kpis.map(k=>`<div class="kpi"><div class="kpi-label">${k[0]}</div><div class="kpi-value">${k[1]}</div><div class="kpi-sub">${k[2]}</div></div>`).join('');
+}
+
+function renderCustomers(){
+  const rows=cache.profiles.filter(p=>!p.is_admin).map(p=>{
+    const ev=cache.events.filter(e=>e.user_id===p.id);
+    const sessions=new Set(ev.map(e=>e.session_id)).size;
+    const bySess={}; ev.filter(e=>e.event_type==='heartbeat').forEach(e=>{const a=e.meta?.active_ms||0;if(!bySess[e.session_id]||a>bySess[e.session_id])bySess[e.session_id]=a;});
+    const active=Object.values(bySess).reduce((s,v)=>s+v,0);
+    const designViews=ev.filter(e=>e.event_type==='design_view').length;
+    const zooms=ev.filter(e=>e.event_type==='zoom').length;
+    const adds=ev.filter(e=>e.event_type==='add_to_order').length;
+    const orders=cache.orders.filter(o=>o.user_id===p.id).length;
+    const last=ev.length?ev[0].created_at:null;
+    return {p,sessions,active,designViews,zooms,adds,orders,last,evCount:ev.length};
+  }).sort((a,b)=>b.active-a.active);
+  const body=document.getElementById('custBody');
+  if(rows.length===0){ body.innerHTML='<tr><td colspan="9" class="loading">No customer activity yet.</td></tr>'; return; }
+  body.innerHTML=rows.map(r=>`
+    <tr class="customer-row" data-uid="${r.p.id}">
+      <td class="email-cell">${r.p.email||r.p.full_name||'—'}</td>
+      <td>${r.p.company||'<span class="muted">—</span>'}</td>
+      <td class="num">${r.sessions}</td>
+      <td class="num">${fmtTime(r.active)}</td>
+      <td class="num">${r.designViews}</td>
+      <td class="num">${r.zooms}</td>
+      <td class="num">${r.adds}</td>
+      <td class="num">${r.orders}</td>
+      <td class="muted">${r.last?ago(r.last):'—'}</td>
+    </tr>`).join('');
+  document.querySelectorAll('.customer-row').forEach(row=>{
+    row.addEventListener('click',()=>{
+      document.querySelectorAll('.customer-row').forEach(x=>x.classList.remove('active'));
+      row.classList.add('active');
+      document.getElementById('heatCustomer').value=row.dataset.uid;
+      renderHeatmap(row.dataset.uid);
+      document.getElementById('heatStage').scrollIntoView({behavior:'smooth',block:'center'});
+    });
+  });
+}
+
+function renderDesigns(){
+  const counts={};
+  cache.events.filter(e=>['design_view','color_view','color_preview'].includes(e.event_type)&&e.design_code).forEach(e=>{counts[e.design_code]=(counts[e.design_code]||0)+1;});
+  const arr=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const max=arr.length?arr[0][1]:1;
+  document.getElementById('designBody').innerHTML=arr.length?arr.map(([code,n])=>`
+    <tr><td><span class="swatch-mini" style="background-image:url('${DESIGN_THUMBS[code]||''}')"></span><span class="tag">${code}</span></td>
+    <td class="num">${n}</td><td><div class="bar"><div class="bar-fill" style="width:${(n/max*100).toFixed(0)}%"></div></div></td></tr>`).join('')
+    :'<tr><td colspan="3" class="muted">No views yet.</td></tr>';
+}
+function renderColors(){
+  const counts={},rolls={};
+  cache.events.filter(e=>e.event_type==='add_to_order'&&e.variant).forEach(e=>{counts[e.variant]=(counts[e.variant]||0)+1;rolls[e.variant]=(rolls[e.variant]||0)+(e.meta?.rolls||0);});
+  const arr=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('colorBody').innerHTML=arr.length?arr.map(([v,n])=>`<tr><td><span class="tag">${v}</span></td><td class="num">${n}</td><td class="num">${fmt(rolls[v]||0)}</td></tr>`).join('')
+    :'<tr><td colspan="3" class="muted">No colours added yet.</td></tr>';
+}
+function renderOrders(){
+  document.getElementById('orderBody').innerHTML=cache.orders.length?cache.orders.map(o=>{
+    const items=cache.items.filter(i=>i.order_id===o.id).length;
+    return `<tr><td class="muted">${ago(o.created_at)}</td><td class="email-cell">${emailFor(o.user_id)}</td>
+      <td><span class="tag">${o.order_type}</span></td><td class="num">${fmt(o.total_rolls)}</td>
+      <td class="num">${fmt(o.total_tiles)}</td><td class="num">${fmt(o.total_sqft)}</td><td class="num">${items}</td></tr>`;
+  }).join(''):'<tr><td colspan="7" class="muted">No orders yet.</td></tr>';
+}
+function renderFeed(){
+  const feed=cache.events.slice(0,60);
+  document.getElementById('feedBody').innerHTML=feed.map(e=>{
+    let detail='';
+    if(e.event_type==='mouse_path')detail=`${e.meta?.points?.length||0} points`;
+    else if(e.event_type==='view_mode')detail=e.meta?.mode||'';
+    else if(e.event_type==='add_to_order')detail=`${e.meta?.rolls||0} rolls`;
+    else if(e.event_type==='order_submitted')detail=`${e.meta?.total_rolls||0} rolls`;
+    else if(e.event_type==='heartbeat')detail=fmtTime(e.meta?.active_ms);
+    else if(e.event_type==='scroll_depth')detail=(e.meta?.pct||0)+'%';
+    return `<tr><td class="muted">${ago(e.created_at)}</td><td class="email-cell">${emailFor(e.user_id)}</td>
+      <td><span class="tag">${e.event_type}</span></td><td>${e.design_code?`<span class="tag">${e.design_code}</span>`:'<span class="muted">—</span>'}</td>
+      <td class="muted">${detail}</td></tr>`;
+  }).join('');
+}
+
+function populateHeatSelect(){
+  const sel=document.getElementById('heatCustomer');
+  const custs=cache.profiles.filter(p=>!p.is_admin);
+  sel.innerHTML='<option value="">—</option>'+custs.map(p=>`<option value="${p.id}">${p.email||p.full_name||p.id.slice(0,8)}</option>`).join('');
+  sel.onchange=()=>{ if(sel.value){renderHeatmap(sel.value);} };
+}
+
+function renderHeatmap(uid){
+  const canvas=document.getElementById('heatCanvas');
+  const stage=document.getElementById('heatStage');
+  const empty=document.getElementById('heatEmpty');
+  const pts=[];
+  let refVW=1440, refVH=900;
+  cache.events.filter(e=>e.user_id===uid&&e.event_type==='mouse_path').forEach(e=>{
+    if(e.meta?.vw)refVW=e.meta.vw; if(e.meta?.vh)refVH=e.meta.vh;
+    (e.meta?.points||[]).forEach(pt=>pts.push(pt));
+  });
+  document.getElementById('heatHint').textContent=`${emailFor(uid)} · ${pts.length} points`;
+  if(pts.length===0){ empty.style.display='flex'; empty.textContent='No mouse-movement data captured for this customer yet.'; const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+  empty.style.display='none';
+  const W=stage.clientWidth, H=stage.clientHeight;
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  // draw density blobs
+  pts.forEach(pt=>{
+    const x=(pt.x/refVW)*W, y=(pt.y/refVH)*H;
+    const r=26;
+    const g=ctx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,'rgba(217,161,91,0.20)');
+    g.addColorStop(1,'rgba(217,161,91,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+  });
+  // path line
+  ctx.strokeStyle='rgba(181,122,60,0.25)'; ctx.lineWidth=1;
+  ctx.beginPath();
+  pts.forEach((pt,i)=>{ const x=(pt.x/refVW)*W,y=(pt.y/refVH)*H; if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y); });
+  ctx.stroke();
+}
+</script>
+</body>
+</html>
