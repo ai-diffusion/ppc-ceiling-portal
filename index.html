@@ -75,6 +75,25 @@ input{font-family:inherit;}
 
 /* ===== FILTER ===== */
 .filterrow{max-width:1360px;margin:0 auto;padding:24px 24px 8px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.collection-row{background:var(--ink);border-bottom:1px solid var(--walnut);}
+.construction-strip{background:var(--card);border-bottom:1px solid var(--line);}
+.construction-inner{max-width:1360px;margin:0 auto;padding:22px 24px 26px;}
+.construction-inner h3{font-family:var(--disp);font-size:14px;text-transform:uppercase;letter-spacing:.04em;margin:0 0 14px;}
+.layer-stack{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line);max-width:640px;}
+.layer-row{display:flex;align-items:center;gap:14px;background:#fff;padding:10px 14px;}
+.layer-swatch{width:46px;height:26px;flex:0 0 auto;border:1px solid rgba(0,0,0,.15);}
+.layer-face{background:linear-gradient(90deg,#c9a878,#e8d4b0,#c9a878);}
+.layer-core{background:repeating-linear-gradient(45deg,#e8e2d2,#e8e2d2 3px,#d8d0ba 3px,#d8d0ba 6px);}
+.layer-metal{background:linear-gradient(120deg,#8e96a0 0%,#e8ecef 22%,#b7bfc7 40%,#f2f5f7 55%,#9aa3ac 72%,#dfe4e8 88%,#8e96a0 100%);background-size:200% 100%;animation:shimmer 3.5s linear infinite;}
+@keyframes shimmer{0%{background-position:0% 0;}100%{background-position:200% 0;}}
+.layer-text{display:flex;flex-direction:column;font-size:12.5px;}
+.layer-text b{font-family:var(--disp);font-size:13px;}
+.layer-text span{color:var(--steel);font-size:11.5px;margin-top:1px;}
+.construction-note{max-width:640px;font-size:12.5px;color:var(--ink-soft);margin:12px 0 0;line-height:1.6;}
+.collection-row-inner{max-width:1360px;margin:0 auto;padding:0 24px;display:flex;gap:0;}
+.coll-tab{font-family:var(--disp);font-weight:600;font-size:13px;padding:14px 22px;background:transparent;border:none;color:var(--steel-soft);letter-spacing:.02em;border-bottom:3px solid transparent;display:flex;align-items:center;gap:8px;}
+.coll-tab.active{color:var(--paper);border-bottom-color:var(--walnut);}
+.coll-badge{font-family:var(--mono);font-size:9px;background:var(--walnut);color:#fff;padding:2px 6px;border-radius:10px;letter-spacing:.03em;text-transform:uppercase;}
 .filterrow h2{font-family:var(--disp);font-size:15px;font-weight:600;margin:0;text-transform:uppercase;letter-spacing:.04em;}
 .chips{display:flex;gap:8px;}
 .chip{font-family:var(--mono);font-size:11.5px;padding:6px 12px;border:1px solid var(--line);background:var(--card);border-radius:20px;letter-spacing:.02em;}
@@ -154,6 +173,8 @@ input{font-family:inherit;}
 .scene-stage{flex:1;position:relative;overflow:hidden;}
 .scene{position:absolute;inset:0;display:none;}
 .scene.active{display:block;}
+.scene-real{background:#0B0D0F;}
+.scene-real img{display:block;}
 .room-shell{position:absolute;inset:0;overflow:hidden;}
 .rs-ceiling{position:absolute;top:0;left:0;right:0;height:46%;background-repeat:repeat;background-size:22% auto;transform-origin:top center;clip-path:polygon(0 0,100% 0,82% 100%,18% 100%);filter:brightness(.8) saturate(.95);}
 .rs-ceiling::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.15),rgba(0,0,0,.55));}
@@ -195,7 +216,17 @@ input{font-family:inherit;}
 .vswatch-code{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:8.5px;color:var(--steel-soft);white-space:nowrap;}
 
 .info-col{padding:22px 24px;display:flex;flex-direction:column;}
-.info-eyebrow{font-family:var(--mono);font-size:11px;color:var(--steel);letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px;}
+.info-eyebrow{font-family:var(--mono);font-size:11px;color:var(--steel);letter-spacing:.05em;text-transform:uppercase;}
+.info-eyebrow-row{display:flex;align-items:center;justify-content:space-between;}
+.heart-btn{background:transparent;border:1px solid var(--line);width:34px;height:34px;font-size:16px;color:var(--walnut);cursor:pointer;line-height:1;border-radius:50%;}
+.heart-btn.saved{background:var(--walnut);color:#fff;border-color:var(--walnut);}
+.card-heart{position:absolute;bottom:8px;right:8px;background:rgba(20,24,28,.7);border:none;width:30px;height:30px;border-radius:50%;color:#fff;font-size:15px;cursor:pointer;z-index:2;line-height:1;}
+.card-heart.saved{background:var(--walnut);}
+.finish-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.finish-toggle{display:flex;border:1px solid var(--ink);}
+.finbtn{padding:8px 16px;background:var(--card);border:none;font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-soft);}
+.finbtn.active{background:var(--walnut);color:#fff;}
+.finbtn:not(:last-child){border-right:1px solid var(--ink);}
 .info-title{font-family:var(--disp);font-size:23px;font-weight:600;margin:0 0 2px;}
 .info-code{font-family:var(--mono);font-size:12.5px;color:var(--walnut-deep);margin-bottom:16px;}
 .info-specs{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:6px 0 18px;}
@@ -249,6 +280,25 @@ input{font-family:inherit;}
 
 /* ===== CUSTOM STRIP ===== */
 .custom-strip{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.side-overlay{position:fixed;inset:0;background:rgba(20,24,28,.6);z-index:150;display:none;justify-content:flex-end;}
+.side-overlay.open{display:flex;}
+.side-panel{background:var(--paper);width:min(480px,100%);height:100%;overflow-y:auto;}
+.side-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;background:var(--ink);position:sticky;top:0;z-index:2;}
+.side-head h3{color:var(--paper);font-family:var(--disp);font-size:16px;margin:0;}
+.side-body{padding:16px 20px 40px;}
+.side-empty{font-family:var(--mono);font-size:12px;color:var(--steel);padding:30px 0;text-align:center;}
+.shortlist-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft);align-items:center;}
+.shortlist-swatch{width:56px;height:56px;background-size:cover;background-position:center;flex:0 0 auto;}
+.shortlist-info{flex:1;}
+.shortlist-name{font-family:var(--disp);font-weight:600;font-size:13.5px;}
+.shortlist-code{font-family:var(--mono);font-size:10.5px;color:var(--steel);}
+.shortlist-remove{background:none;border:1px solid var(--line);padding:5px 10px;font-family:var(--mono);font-size:10.5px;color:var(--steel);}
+.order-hist-card{border:1px solid var(--line);margin-bottom:14px;background:var(--card);}
+.order-hist-head{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--steel);}
+.order-hist-head b{color:var(--ink);font-family:var(--disp);}
+.order-hist-items{padding:10px 14px;font-size:12.5px;}
+.order-hist-line{display:flex;justify-content:space-between;padding:4px 0;}
+.order-hist-status{display:inline-block;padding:2px 8px;font-family:var(--mono);font-size:9.5px;text-transform:uppercase;background:var(--ok-tint);color:var(--ok);border-radius:10px;}
 .custom-inner{max-width:1360px;margin:0 auto;padding:36px 24px;display:grid;grid-template-columns:1fr 1fr;gap:28px;}
 @media(max-width:760px){.custom-inner{grid-template-columns:1fr;}}
 .custom-inner h3{font-family:var(--disp);font-size:19px;margin:0 0 8px;}
@@ -266,7 +316,7 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
   <div class="auth-card">
     <div class="auth-head">
       <div class="auth-brand">DECORATIVE CEMENT FIBER BOARD</div>
-      <div class="auth-brand-sub">Trade Portal</div>
+      <div class="auth-brand-sub">Trade Portal · Jit Polycoat Enterprise</div>
     </div>
     <div class="auth-body">
       <div class="auth-tabs">
@@ -301,9 +351,11 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
   <div class="specbar-inner">
     <div class="brand">
       <span class="brand-mark">DECORATIVE CEMENT FIBER BOARD</span>
-      <span class="brand-sub">Trade Portal</span>
+      <span class="brand-sub">Trade Portal · Jit Polycoat Enterprise</span>
     </div>
     <div class="spec-right">
+      <button class="logout-btn" id="shortlistBtn">♡ Shortlist <span id="shortlistCount">0</span></button>
+      <button class="logout-btn" id="ordersBtn">My Orders</button>
       <span class="user-chip">Signed in as <b id="userLabel">—</b></span>
       <button class="logout-btn" id="logoutBtn">Sign out</button>
     </div>
@@ -331,9 +383,38 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
   </div>
 </div>
 
+<div class="construction-strip">
+  <div class="construction-inner">
+    <h3>Product Construction</h3>
+    <div class="layer-stack">
+      <div class="layer-row">
+        <div class="layer-swatch layer-face"></div>
+        <div class="layer-text"><b>Face Layer</b><span>Modified polymer film — printed design, 0.10 mm</span></div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-swatch layer-core"></div>
+        <div class="layer-text"><b>Core</b><span>Printed paper composite substrate</span></div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-swatch layer-metal"></div>
+        <div class="layer-text"><b>Bottom Layer — Metalized Film</b><span>Aluminized reflective bonded film for insulation &amp; radiant heat reflectivity</span></div>
+      </div>
+    </div>
+    <p class="construction-note">The metalized bottom layer reflects radiant heat away from the CFB board, improving thermal performance in roof and ceiling applications — in addition to the panel's standard PVC-free, VOC-free composition.</p>
+  </div>
+</div>
+
+<div class="collection-row">
+  <div class="collection-row-inner">
+    <button class="coll-tab active" data-collection="ceiling">Ceiling Collection</button>
+    <button class="coll-tab" data-collection="nextgen">NextGen Series <span class="coll-badge">New</span></button>
+    <button class="coll-tab" data-collection="natural">Natural Line <span class="coll-badge">New</span></button>
+  </div>
+</div>
+
 <div class="filterrow">
   <h2 id="galleryCount">17 designs</h2>
-  <div class="chips">
+  <div class="chips" id="seriesChips">
     <button class="chip active" data-series="ALL">All</button>
     <button class="chip" data-series="SIGNATURE">Signature</button>
     <button class="chip" data-series="ATELIER">Atelier</button>
@@ -392,6 +473,10 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
           </div>
           <div class="scenepane" id="scenepane">
             <div class="scene-stage">
+              <div class="scene scene-real" id="sceneReal">
+                <img id="realRoomImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;">
+                <div class="scene-caption">Supplier installation reference</div>
+              </div>
               <div class="scene scene-home active" id="sceneHome">
                 <div class="room-shell">
                   <div class="rs-ceiling" id="ceilingHome"></div>
@@ -415,7 +500,7 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
                 <div class="scene-caption">Office · workspace ceiling</div>
               </div>
             </div>
-            <div class="room-controls">
+            <div class="room-controls" id="roomControlsIllustrated">
               <div class="scene-toggle">
                 <button class="stbtn active" data-scene="home">Home</button>
                 <button class="stbtn" data-scene="office">Office</button>
@@ -427,7 +512,10 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
         <div class="variant-strip" id="variantStrip"></div>
       </div>
       <div class="info-col">
-        <div class="info-eyebrow" id="infoSeries">Signature</div>
+        <div class="info-eyebrow-row">
+          <div class="info-eyebrow" id="infoSeries">Signature</div>
+          <button class="heart-btn" id="detailHeart" title="Save to shortlist">♡</button>
+        </div>
         <div class="info-title" id="infoName">—</div>
         <div class="info-code" id="infoCode">—</div>
         <div class="info-specs">
@@ -437,6 +525,13 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
           <div class="info-spec-row"><span>Coverage per block</span><span>70,033 sq ft ≈ 4,377 CFB boards</span></div>
           <div class="info-spec-row"><span>Thickness</span><span>0.10 mm</span></div>
           <div class="info-spec-row"><span>Composition</span><span>PVC-free / VOC-free</span></div>
+        </div>
+        <div class="finish-row">
+          <span class="qty-label">Finish</span>
+          <div class="finish-toggle">
+            <button class="finbtn active" data-finish="matt">Matt</button>
+            <button class="finbtn" data-finish="gloss">Gloss</button>
+          </div>
         </div>
         <div class="qty-row">
           <span class="qty-label">Blocks</span>
@@ -451,6 +546,20 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
         <div class="added-flash" id="addedFlash">✓ Added — open the order bar below to review &amp; submit</div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ===== SHORTLIST / ORDER HISTORY PANELS ===== -->
+<div class="side-overlay" id="shortlistOverlay">
+  <div class="side-panel">
+    <div class="side-head"><h3>My Shortlist</h3><button class="detail-close" id="shortlistClose">&times;</button></div>
+    <div class="side-body" id="shortlistBody"><div class="side-empty">No designs shortlisted yet — tap the ♡ on any design.</div></div>
+  </div>
+</div>
+<div class="side-overlay" id="ordersOverlay">
+  <div class="side-panel">
+    <div class="side-head"><h3>My Orders</h3><button class="detail-close" id="ordersClose">&times;</button></div>
+    <div class="side-body" id="ordersBody"><div class="side-empty">No past orders yet.</div></div>
   </div>
 </div>
 
@@ -491,10 +600,10 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
       <button class="otbtn" data-ot="recurring">Recurring order (min. 100,000 tiles / 2 mo.)</button>
     </div>
     <table class="cart-table">
-      <thead><tr><th>Design</th><th>Colour</th><th>Blocks</th><th>Metres</th><th>CFB Boards</th><th>Sq ft</th><th></th></tr></thead>
+      <thead><tr><th>Design</th><th>Colour</th><th>Finish</th><th>Blocks</th><th>Metres</th><th>CFB Boards</th><th>Sq ft</th><th></th></tr></thead>
       <tbody id="cartBody"></tbody>
     </table>
-    <div class="cart-empty" id="cartEmpty">No designs added yet — open any design and add blocks (1 block = 500 kg print run = 5,333 m).</div>
+    <div class="cart-empty" id="cartEmpty">No designs added yet — open any design and add blocks (1 block = 5,333 m).</div>
     <div class="drawer-actions">
       <button class="btn btn-primary" id="submitOrder">Submit order</button>
       <button class="btn btn-ghost" id="clearOrder">Clear</button>
@@ -513,14 +622,49 @@ const WIDTH_FT = WIDTH_MM / 304.8; // ≈ 4.0026 ft — used for sq ft / board m
 const TILE_SQFT = 16;             // 4x4 ft CFB board
 const BLOCK_LENGTH_M = 5333;      // one design/colour print run (500 kg Baaya block)
 let DESIGNS = [];
+let NEXTGEN_DESIGNS = [];
+let NATURAL_DESIGNS = [];
+let currentCollection = 'ceiling'; // 'ceiling' | 'nextgen' | 'natural'
 
 const sb = window.supabase.createClient(SUPA_URL, SUPA_ANON);
 
-// load design catalog from external file (keeps HTML small for hosting)
+// load design catalogs from external files (keeps HTML small for hosting)
 window.__designsReady = fetch('https://jzofcuonpbudcwvwwymu.supabase.co/storage/v1/object/public/designs/data/designs.json').then(r=>r.json()).then(d=>{DESIGNS=d;}).catch(e=>{console.error('designs load failed',e);});
+window.__nextgenReady = fetch('https://jzofcuonpbudcwvwwymu.supabase.co/storage/v1/object/public/designs/data/nextgen_designs.json').then(r=>r.json()).then(d=>{
+  // wrap each single-image NextGen design into the same {variants:[...]} shape the UI expects
+  NEXTGEN_DESIGNS = d.map(x=>({
+    mcode:x.mcode, name:x.name, series:x.series,
+    variants:[{id:'01', vlabel:'01', thumb:x.thumb, hi:x.sheet}],
+    room:x.room
+  }));
+}).catch(e=>{console.error('nextgen load failed',e);});
+window.__naturalReady = fetch('https://jzofcuonpbudcwvwwymu.supabase.co/storage/v1/object/public/designs/data/natural_designs.json').then(r=>r.json()).then(d=>{
+  NATURAL_DESIGNS = d; // already has multi-variant structure + room
+}).catch(e=>{console.error('natural load failed',e);});
+
+const COLLECTION_READY = {ceiling:()=>window.__designsReady, nextgen:()=>window.__nextgenReady, natural:()=>window.__naturalReady};
+const COLLECTION_CHIPS = {
+  ceiling: `<button class="chip active" data-series="ALL">All</button><button class="chip" data-series="SIGNATURE">Signature</button><button class="chip" data-series="ATELIER">Atelier</button>`,
+  nextgen: `<button class="chip active" data-series="ALL">All</button><button class="chip" data-series="WOOD">Wood</button><button class="chip" data-series="PATTERN">Pattern</button>`,
+  natural: `<button class="chip active" data-series="ALL">All</button><button class="chip" data-series="WOOD">Wood</button><button class="chip" data-series="STONE">Stone</button>`
+};
+
+document.querySelectorAll('.coll-tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.coll-tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    currentCollection = t.dataset.collection;
+    currentSeries='ALL';
+    document.getElementById('seriesChips').innerHTML = COLLECTION_CHIPS[currentCollection];
+    wireChips();
+    COLLECTION_READY[currentCollection]().then(renderGallery);
+    track('collection_switch',{meta:{collection:currentCollection}});
+  });
+});
 
 
-let currentSeries='ALL', cart=[], orderType='initial', activeDetail=null;
+let currentSeries='ALL', cart=[], orderType='initial', activeDetail=null, selectedFinish='matt';
+let wishlist=new Set(); // "mcode|variant"
 let zoomScale=1, panX=0, panY=0, dragging=false, dragStart=null;
 let roomSize=16, session=null, sessionId=null;
 
@@ -627,6 +771,8 @@ function onAuthed(sess){
   // Welcome message with the person's name
   showWelcome(sess);
   window.__designsReady.then(()=>renderGallery());
+  loadWishlist();
+  loadOrderHistory();
   track('session_start',{meta:{ua:navigator.userAgent, vw:window.innerWidth, vh:window.innerHeight}});
 }
 async function showWelcome(sess){
@@ -657,23 +803,30 @@ document.getElementById('logoutBtn').addEventListener('click', async ()=>{
 })();
 
 // ====== GALLERY ======
+function activeDesigns(){
+  if(currentCollection==='nextgen') return NEXTGEN_DESIGNS;
+  if(currentCollection==='natural') return NATURAL_DESIGNS;
+  return DESIGNS;
+}
 function renderGallery(){
   const grid=document.getElementById('gallery'); grid.innerHTML='';
-  const list=DESIGNS.filter(d=>currentSeries==='ALL'||d.series===currentSeries);
+  const list=activeDesigns().filter(d=>currentSeries==='ALL'||d.series===currentSeries);
   document.getElementById('galleryCount').textContent=list.length+' design'+(list.length===1?'':'s')+(currentSeries==='ALL'?'':' — '+currentSeries.charAt(0)+currentSeries.slice(1).toLowerCase());
   list.forEach(d=>{
     const card=document.createElement('div'); card.className='card';
     const main=d.variants[0];
+    const multi=d.variants.length>1;
     const colorChips=d.variants.map((v,i)=>`<div class="color-chip${i===0?' active':''}" data-vid="${v.id}" style="background-image:url('${v.thumb}')" title="${d.mcode}-${v.vlabel}"></div>`).join('');
     card.innerHTML=`
       <div class="card-swatch" data-swatch style="background-image:url('${main.thumb}')">
         <div class="card-code-tag">${d.mcode}</div>
         <div class="card-series-tag">${d.series}</div>
+        <button class="card-heart" data-heart title="Save to shortlist">♡</button>
       </div>
       <div class="card-body">
         <div class="card-name">${d.name}</div>
-        <div class="color-row-label"><span>${d.variants.length} colour option${d.variants.length===1?'':'s'}</span><span>tap to preview</span></div>
-        <div class="color-strip">${colorChips}</div>
+        ${multi?`<div class="color-row-label"><span>${d.variants.length} colour options</span><span>tap to preview</span></div>
+        <div class="color-strip">${colorChips}</div>`:''}
         <div class="card-cta">
           <div class="card-qty">
             <button data-qm>–</button>
@@ -696,8 +849,24 @@ function renderGallery(){
         const v=d.variants.find(x=>x.id===cardVar);
         swatch.style.backgroundImage=`url('${v.thumb}')`;
         track('color_preview',{design_code:d.mcode, variant:d.mcode+'-'+v.vlabel});
+        updHeart();
       });
     });
+    // wishlist heart
+    const heartBtn = card.querySelector('[data-heart]');
+    function updHeart(){
+      const v=d.variants.find(x=>x.id===cardVar);
+      const isSaved = isWishlisted(d.mcode, d.mcode+'-'+v.vlabel);
+      heartBtn.classList.toggle('saved', isSaved);
+      heartBtn.textContent = isSaved ? '♥' : '♡';
+    }
+    heartBtn.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      const v=d.variants.find(x=>x.id===cardVar);
+      toggleWishlist(d, v);
+      updHeart();
+    });
+    updHeart();
     // qty controls (in BLOCKS)
     const qi=card.querySelector('[data-qty]');
     const note=card.querySelector('[data-rollnote]');
@@ -715,7 +884,9 @@ function renderGallery(){
       e.stopPropagation();
       const blocks=parseInt(qi.value,10)||0; if(blocks<=0) return;
       const v=d.variants.find(x=>x.id===cardVar);
+      const prevFinish=selectedFinish; selectedFinish='matt'; // card quick-add defaults to matt; use detail panel to choose gloss
       addToCart(d,v,blocks);
+      selectedFinish=prevFinish;
       addBtn.textContent='✓ Added'; addBtn.classList.add('added');
       setTimeout(()=>{addBtn.textContent='Add blocks';addBtn.classList.remove('added');},1200);
     });
@@ -725,13 +896,16 @@ function renderGallery(){
     grid.appendChild(card);
   });
 }
-document.querySelectorAll('.chip').forEach(c=>{
-  c.addEventListener('click',()=>{
-    document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
-    c.classList.add('active'); currentSeries=c.dataset.series; renderGallery();
-    track('filter',{meta:{series:currentSeries}});
+function wireChips(){
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('click',()=>{
+      document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active'); currentSeries=c.dataset.series; renderGallery();
+      track('filter',{meta:{series:currentSeries, collection:currentCollection}});
+    });
   });
-});
+}
+wireChips();
 
 // ====== DETAIL ======
 function openDetail(design,variantId){
@@ -742,12 +916,35 @@ function openDetail(design,variantId){
   document.getElementById('infoCode').textContent=design.mcode;
   document.getElementById('addedFlash').classList.remove('show');
   document.getElementById('qtyInput').value=1;
+  selectedFinish='matt';
+  document.querySelectorAll('.finbtn').forEach(b=>b.classList.toggle('active', b.dataset.finish==='matt'));
   setVariant(variantId);
   setMode('swatch');
   renderVariantStrip();
   updQtyConv();
+  updDetailHeart();
   track('design_view',{design_code:design.mcode, variant:design.mcode+'-'+(design.variants.find(v=>v.id===variantId)?.vlabel||'')});
 }
+function updDetailHeart(){
+  if(!activeDetail) return;
+  const v=currentVariant();
+  const saved=isWishlisted(activeDetail.design.mcode, activeDetail.design.mcode+'-'+v.vlabel);
+  const btn=document.getElementById('detailHeart');
+  btn.classList.toggle('saved', saved);
+  btn.textContent = saved ? '♥' : '♡';
+}
+document.getElementById('detailHeart').addEventListener('click',()=>{
+  const v=currentVariant();
+  toggleWishlist(activeDetail.design, v);
+  updDetailHeart();
+});
+document.querySelectorAll('.finbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.finbtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    selectedFinish=b.dataset.finish;
+  });
+});
 function currentVariant(){ return activeDetail.design.variants.find(v=>v.id===activeDetail.variantId); }
 function renderVariantStrip(){
   const strip=document.getElementById('variantStrip'); strip.innerHTML='';
@@ -776,6 +973,7 @@ function setVariant(variantId){
   zi.src=v.thumb; // instant thumbnail while hi-res loads
   document.getElementById('tileBox').style.backgroundImage=`url('${v.hi}')`;
   updateRoom(); updateScene(); resetZoom(); renderVariantStrip();
+  if(document.getElementById('detailHeart')) updDetailHeart();
 }
 function setMode(mode){
   document.querySelectorAll('.vtab').forEach(t=>t.classList.toggle('active',t.dataset.mode===mode));
@@ -821,6 +1019,15 @@ function updateRoom(){
 function updateScene(){
   if(!activeDetail)return;
   const img=currentVariant().hi;
+  const hasReal = !!activeDetail.design.room;
+  document.getElementById('sceneReal').classList.toggle('active', hasReal);
+  document.getElementById('sceneHome').classList.toggle('active', !hasReal);
+  document.getElementById('sceneOffice').classList.remove('active');
+  document.getElementById('roomControlsIllustrated').style.display = hasReal ? 'none' : 'flex';
+  if(hasReal){
+    document.getElementById('realRoomImg').src = activeDetail.design.room;
+    return;
+  }
   ['ceilingHome','ceilingOffice'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.backgroundImage=`url('${img}')`;});
   [['lightsHome',3],['lightsOffice',4]].forEach(([id,cols])=>{
     const layer=document.getElementById(id);if(!layer)return;layer.innerHTML='';
@@ -836,7 +1043,7 @@ document.getElementById('overlay').addEventListener('click',(e)=>{if(e.target.id
 // detail qty
 function updQtyConv(){
   const b=parseInt(document.getElementById('qtyInput').value,10)||0;
-  document.getElementById('qtyConv').innerHTML=`<b>${fmt(b)} block${b===1?'':'s'}</b> = ${fmt(blocksToMeters(b))} m = ${fmt(blocksToSqft(b))} sq ft = ${fmt(blocksToTiles(b))} CFB boards (4×4 ft)<br>1 block = 500 kg print run = 5,333 m at 1220 mm width`;
+  document.getElementById('qtyConv').innerHTML=`<b>${fmt(b)} block${b===1?'':'s'}</b> = ${fmt(blocksToMeters(b))} m = ${fmt(blocksToSqft(b))} sq ft = ${fmt(blocksToTiles(b))} CFB boards (4×4 ft)<br>1 block = 5,333 m of finished material`;
 }
 document.getElementById('qtyInput').addEventListener('input',updQtyConv);
 document.getElementById('qtyMinus').addEventListener('click',()=>{const el=document.getElementById('qtyInput');el.value=Math.max(1,(parseInt(el.value,10)||0)-1);updQtyConv();});
@@ -849,13 +1056,13 @@ document.getElementById('addToOrder').addEventListener('click',()=>{
 
 // ====== CART (unit = BLOCKS) ======
 function addToCart(design,variant,blocks){
-  const key=design.mcode+'|'+variant.id;
+  const key=design.mcode+'|'+variant.id+'|'+selectedFinish;
   const ex=cart.find(c=>c.key===key);
   if(ex){ ex.blocks+=blocks; } else {
-    cart.push({key,mcode:design.mcode,name:design.name,vid:variant.id,vlabel:variant.vlabel,thumb:variant.thumb,blocks});
+    cart.push({key,mcode:design.mcode,name:design.name,vid:variant.id,vlabel:variant.vlabel,thumb:variant.thumb,blocks,finish:selectedFinish});
   }
   renderCart();
-  track('add_to_order',{design_code:design.mcode,variant:design.mcode+'-'+variant.vlabel,meta:{blocks,meters:blocksToMeters(blocks),tiles:blocksToTiles(blocks)}});
+  track('add_to_order',{design_code:design.mcode,variant:design.mcode+'-'+variant.vlabel,meta:{blocks,meters:blocksToMeters(blocks),tiles:blocksToTiles(blocks),finish:selectedFinish}});
 }
 document.getElementById('drawerBar').addEventListener('click',()=>{
   const b=document.getElementById('drawerBody');b.classList.toggle('open');
@@ -875,6 +1082,7 @@ function renderCart(){
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><span class="cart-swatch-mini" style="background-image:url('${item.thumb}')"></span>${item.mcode} ${item.name}</td>
       <td>${item.mcode.split('-')[1]}-${item.vlabel}</td>
+      <td style="text-transform:capitalize;">${item.finish||'matt'}</td>
       <td>${fmt(item.blocks)}</td><td>${fmt(meters)}</td><td>${fmt(tiles)}</td><td>${fmt(sqft)}</td>
       <td><button class="cart-remove" data-idx="${idx}">remove</button></td>`;
     body.appendChild(tr);
@@ -913,7 +1121,8 @@ document.getElementById('submitOrder').addEventListener('click', async ()=>{
     const items=cart.map(i=>({
       order_id:order.id, user_id:session.user.id, design_code:i.mcode, design_name:i.name,
       variant:i.mcode.split('-')[1]+'-'+i.vlabel, qty_tiles:blocksToTiles(i.blocks),
-      qty_length_m:blocksToMeters(i.blocks), qty_blocks:i.blocks, sqft:blocksToSqft(i.blocks)
+      qty_length_m:blocksToMeters(i.blocks), qty_blocks:i.blocks, sqft:blocksToSqft(i.blocks),
+      finish:i.finish||'matt'
     }));
     const {error:ierr}=await sb.from('order_items').insert(items);
     if(ierr) throw ierr;
@@ -921,6 +1130,7 @@ document.getElementById('submitOrder').addEventListener('click', async ()=>{
     msg.className='submit-msg ok';
     msg.textContent=`✓ Order submitted (${fmt(totalBlocks)} blocks / ${fmt(totalMeters)} m / ${fmt(totalTiles)} CFB boards). Our team will follow up to confirm.`;
     cart=[]; renderCart();
+    loadOrderHistory();
   }catch(e){ msg.className='submit-msg err'; msg.textContent='Could not submit: '+(e.message||'error'); }
 });
 
@@ -928,6 +1138,103 @@ document.getElementById('customBtn').addEventListener('click',()=>{
   track('custom_request_click',{});
   alert('Thanks — please reply to your account manager with your reference sample or image, and we will prepare a custom colour-match and quote.');
 });
+
+// ====== WISHLIST / SHORTLIST ======
+async function loadWishlist(){
+  try{
+    const {data}=await sb.from('wishlist').select('design_code,variant').eq('user_id',session.user.id);
+    wishlist = new Set((data||[]).map(w=>w.design_code+'|'+w.variant));
+    updateShortlistCount();
+    renderGallery();
+  }catch(e){ console.error('wishlist load failed', e); }
+}
+function isWishlisted(mcode, variantFull){ return wishlist.has(mcode+'|'+variantFull); }
+async function toggleWishlist(design, variant){
+  const variantFull = design.mcode+'-'+variant.vlabel;
+  const key = design.mcode+'|'+variantFull;
+  if(wishlist.has(key)){
+    wishlist.delete(key);
+    await sb.from('wishlist').delete().eq('user_id',session.user.id).eq('design_code',design.mcode).eq('variant',variantFull);
+    track('wishlist_remove',{design_code:design.mcode, variant:variantFull});
+  } else {
+    wishlist.add(key);
+    await sb.from('wishlist').insert({user_id:session.user.id, design_code:design.mcode, variant:variantFull});
+    track('wishlist_add',{design_code:design.mcode, variant:variantFull});
+  }
+  updateShortlistCount();
+}
+function updateShortlistCount(){ document.getElementById('shortlistCount').textContent = wishlist.size; }
+
+function findDesignByCode(mcode){
+  return [...DESIGNS, ...NEXTGEN_DESIGNS].find(d=>d.mcode===mcode);
+}
+function renderShortlistPanel(){
+  const body=document.getElementById('shortlistBody');
+  const entries=[...wishlist];
+  if(entries.length===0){ body.innerHTML='<div class="side-empty">No designs shortlisted yet — tap the ♡ on any design.</div>'; return; }
+  body.innerHTML=entries.map(key=>{
+    const [mcode, variantFull]=key.split('|');
+    const design=findDesignByCode(mcode);
+    if(!design) return '';
+    const vlabel=variantFull.split('-').pop();
+    const variant=design.variants.find(v=>v.vlabel===vlabel) || design.variants[0];
+    return `<div class="shortlist-item">
+      <div class="shortlist-swatch" style="background-image:url('${variant.thumb}')"></div>
+      <div class="shortlist-info"><div class="shortlist-name">${design.name}</div><div class="shortlist-code">${variantFull}</div></div>
+      <button class="shortlist-remove" data-key="${key}">Remove</button>
+    </div>`;
+  }).join('');
+  body.querySelectorAll('.shortlist-remove').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const [mcode, variantFull]=btn.dataset.key.split('|');
+      const design=findDesignByCode(mcode);
+      const vlabel=variantFull.split('-').pop();
+      const variant=(design?.variants.find(v=>v.vlabel===vlabel)) || {vlabel};
+      if(design) await toggleWishlist(design, variant);
+      else { wishlist.delete(btn.dataset.key); updateShortlistCount(); }
+      renderShortlistPanel();
+      renderGallery();
+    });
+  });
+}
+document.getElementById('shortlistBtn').addEventListener('click',()=>{
+  renderShortlistPanel();
+  document.getElementById('shortlistOverlay').classList.add('open');
+});
+document.getElementById('shortlistClose').addEventListener('click',()=>document.getElementById('shortlistOverlay').classList.remove('open'));
+document.getElementById('shortlistOverlay').addEventListener('click',(e)=>{ if(e.target.id==='shortlistOverlay') e.currentTarget.classList.remove('open'); });
+
+// ====== ORDER HISTORY ======
+async function loadOrderHistory(){
+  try{
+    const {data:orders}=await sb.from('orders').select('*').eq('user_id',session.user.id).order('created_at',{ascending:false});
+    const {data:items}=await sb.from('order_items').select('*').eq('user_id',session.user.id);
+    window.__myOrders = orders||[];
+    window.__myOrderItems = items||[];
+  }catch(e){ console.error('order history load failed', e); }
+}
+function renderOrderHistory(){
+  const body=document.getElementById('ordersBody');
+  const orders=window.__myOrders||[];
+  if(orders.length===0){ body.innerHTML='<div class="side-empty">No past orders yet.</div>'; return; }
+  body.innerHTML=orders.map(o=>{
+    const items=(window.__myOrderItems||[]).filter(i=>i.order_id===o.id);
+    const date=new Date(o.created_at).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+    const lines=items.map(i=>`<div class="order-hist-line"><span>${i.design_name} · ${i.variant} · ${(i.finish||'matt')}</span><span>${fmt(i.qty_blocks)} blk</span></div>`).join('');
+    return `<div class="order-hist-card">
+      <div class="order-hist-head"><span><b>${date}</b> · ${o.order_type}</span><span class="order-hist-status">${o.status||'submitted'}</span></div>
+      <div class="order-hist-items">${lines}
+        <div class="order-hist-line" style="border-top:1px dashed var(--line);margin-top:6px;padding-top:8px;font-weight:600;"><span>Total</span><span>${fmt(o.total_blocks)} blocks · ${fmt(o.total_tiles)} boards</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+document.getElementById('ordersBtn').addEventListener('click',()=>{
+  renderOrderHistory();
+  document.getElementById('ordersOverlay').classList.add('open');
+});
+document.getElementById('ordersClose').addEventListener('click',()=>document.getElementById('ordersOverlay').classList.remove('open'));
+document.getElementById('ordersOverlay').addEventListener('click',(e)=>{ if(e.target.id==='ordersOverlay') e.currentTarget.classList.remove('open'); });
 </script>
 </body>
 </html>
