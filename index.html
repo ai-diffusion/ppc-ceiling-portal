@@ -340,6 +340,7 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
         <input id="authPass" type="password" placeholder="••••••••">
       </div>
       <button class="auth-submit" id="authSubmit">Sign in</button>
+      <button class="auth-submit btn-ghost" id="guestPreviewBtn" style="margin-top:8px;background:transparent;border:1px solid var(--steel);color:var(--steel-soft);">Browse Catalog as Guest</button>
       <div class="auth-msg" id="authMsg"></div>
       <div class="auth-note">Access is limited to approved trade partners. Your session is private and secure.</div>
     </div>
@@ -812,6 +813,11 @@ function setAuthMode(m){
 }
 document.getElementById('authSubmit').addEventListener('click', doAuth);
 document.getElementById('authPass').addEventListener('keydown',(e)=>{ if(e.key==='Enter') doAuth(); });
+document.getElementById('guestPreviewBtn').addEventListener('click', () => {
+  document.getElementById('authGate').classList.add('hidden');
+  document.getElementById('userLabel').textContent = 'Guest Visitor';
+  renderGallery();
+});
 async function doAuth(){
   const email=document.getElementById('authEmail').value.trim();
   const pass=document.getElementById('authPass').value;
@@ -889,9 +895,10 @@ function renderGallery(){
     const colorChips=d.variants.map((v,i)=>`<div class="color-chip${i===0?' active':''}" data-vid="${v.id}" style="background-image:url('${v.thumb}')" title="${d.mcode}-${v.vlabel}"></div>`).join('');
     card.innerHTML=`
       <div class="card-swatch" data-swatch style="background-image:url('${main.thumb}')">
-        <div class="card-code-tag">${d.mcode}</div>
-        <div class="card-series-tag">${d.series}</div>
-        <button class="card-heart" data-heart title="Save to shortlist">♡</button>
+        <img src="${main.thumb}" alt="${d.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;z-index:1;" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/ai-diffusion/decorative-cfb-trade-portal/main/public/swatches/'+this.src.split('/').pop();">
+        <div class="card-code-tag" style="z-index:2;">${d.mcode}</div>
+        <div class="card-series-tag" style="z-index:2;">${d.series}</div>
+        <button class="card-heart" data-heart title="Save to shortlist" style="z-index:2;">♡</button>
       </div>
       <div class="card-body">
         <div class="card-name">${d.name}</div>
@@ -918,6 +925,7 @@ function renderGallery(){
         chips.forEach(x=>x.classList.remove('active')); ch.classList.add('active');
         const v=d.variants.find(x=>x.id===cardVar);
         swatch.style.backgroundImage=`url('${v.thumb}')`;
+        const imgEl = swatch.querySelector('img'); if(imgEl) imgEl.src = v.thumb;
         track('color_preview',{design_code:d.mcode, variant:d.mcode+'-'+v.vlabel});
         updHeart();
       });
