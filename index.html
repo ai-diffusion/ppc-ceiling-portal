@@ -533,6 +533,21 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
             <button class="finbtn" data-finish="gloss">Gloss</button>
           </div>
         </div>
+        <div class="finish-row">
+          <span class="qty-label">Face / Reverse Spec</span>
+          <div class="finish-toggle" id="specToggleGroup">
+            <button class="specbtn active" data-spec="PPC" title="Waterproof polymer face, paper reverse, PVC-free, VOC-free">PPC</button>
+            <button class="specbtn" data-spec="WPPPFCW" title="Waterproof face, waterproof fibre reverse, tear resistant">WPPPFCW</button>
+          </div>
+        </div>
+        <div class="finish-row">
+          <span class="qty-label">Underside Insulation</span>
+          <div class="finish-toggle" id="insulationToggleGroup">
+            <button class="insbtn active" data-insulation="Standard">Standard</button>
+            <button class="insbtn" data-insulation="MIPPC" title="Metallized aluminized paper reverse">MIPPC</button>
+            <button class="insbtn" data-insulation="MIPFC" title="Metallized aluminized fibre reverse">MIPFC</button>
+          </div>
+        </div>
         <div class="qty-row">
           <span class="qty-label">Blocks</span>
           <div class="qty-input-group">
@@ -637,11 +652,25 @@ function processCatalog(rawItems){
       let sheet = v.sheet || hi || '';
       if(hi && hi.startsWith('/')) hi = CDN_BASE + hi;
       if(sheet && sheet.startsWith('/')) sheet = CDN_BASE + sheet;
+
+      let room = item.room || v.room || '';
+      if(!room && item.mcode) {
+        const c = item.mcode.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if(c.includes('9034') || c.includes('kioko')) room = CDN_BASE + '/rooms/herring-20-living.jpg';
+        else if(c.includes('21430') || c.includes('cocoa')) room = CDN_BASE + '/rooms/cocoa-office.jpg';
+        else if(c.includes('aspen')) room = CDN_BASE + '/rooms/aspen-29-living.jpg';
+        else if(c.includes('amber')) room = CDN_BASE + '/rooms/amber-29-living.jpg';
+        else if(c.includes('clay')) room = CDN_BASE + '/rooms/clay-living.jpg';
+        else if(c.includes('graphite')) room = CDN_BASE + '/rooms/graphite-hotel.jpg';
+      }
+
       return {
         id: v.id || '01',
         vlabel: v.vlabel || v.id || '01',
+        thumb: hi,
         hi: hi,
         sheet: sheet,
+        room: room,
         sku: v.sku || ''
       };
     });
@@ -651,6 +680,7 @@ function processCatalog(rawItems){
       series: (item.series || 'VOGUE').toUpperCase(),
       variants: variants,
       face: item.face || 'PPC',
+      room: variants[0]?.room || item.room || '',
       supplier: item.supplier || 'Match Graphics'
     };
   });
@@ -660,12 +690,13 @@ window.__designsReady = fetch('https://cdn.jsdelivr.net/gh/ai-diffusion/decorati
   .then(r=>r.json())
   .then(d=>{
     DESIGNS = processCatalog(d);
+    renderGallery();
   })
   .catch(e=>{
     console.warn('CDN catalog load failed, using fallback', e);
     return fetch('https://jzofcuonpbudcwvwwymu.supabase.co/storage/v1/object/public/designs/data/designs.json')
       .then(r=>r.json())
-      .then(d=>{ DESIGNS = d; });
+      .then(d=>{ DESIGNS = d; renderGallery(); });
   });
 
 window.__nextgenReady = fetch('https://jzofcuonpbudcwvwwymu.supabase.co/storage/v1/object/public/designs/data/nextgen_designs.json').then(r=>r.json()).then(d=>{
@@ -701,7 +732,8 @@ document.querySelectorAll('.coll-tab').forEach(t=>{
 });
 
 
-let currentSeries='ALL', cart=[], orderType='initial', activeDetail=null, selectedFinish='matt';
+let currentSeries='ALL', cart=[], orderType='initial', activeDetail=null;
+let selectedFinish='matt', selectedSpec='PPC', selectedInsulation='Standard';
 let wishlist=new Set(); // "mcode|variant"
 let zoomScale=1, panX=0, panY=0, dragging=false, dragStart=null;
 let roomSize=16, session=null, sessionId=null;
@@ -983,6 +1015,20 @@ document.querySelectorAll('.finbtn').forEach(b=>{
     selectedFinish=b.dataset.finish;
   });
 });
+document.querySelectorAll('.specbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.specbtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    selectedSpec=b.dataset.spec;
+  });
+});
+document.querySelectorAll('.insbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.insbtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    selectedInsulation=b.dataset.insulation;
+  });
+});
 function currentVariant(){ return activeDetail.design.variants.find(v=>v.id===activeDetail.variantId); }
 function renderVariantStrip(){
   const strip=document.getElementById('variantStrip'); strip.innerHTML='';
@@ -1094,13 +1140,13 @@ document.getElementById('addToOrder').addEventListener('click',()=>{
 
 // ====== CART (unit = BLOCKS) ======
 function addToCart(design,variant,blocks){
-  const key=design.mcode+'|'+variant.id+'|'+selectedFinish;
+  const key=design.mcode+'|'+variant.id+'|'+selectedFinish+'|'+selectedSpec+'|'+selectedInsulation;
   const ex=cart.find(c=>c.key===key);
   if(ex){ ex.blocks+=blocks; } else {
-    cart.push({key,mcode:design.mcode,name:design.name,vid:variant.id,vlabel:variant.vlabel,thumb:variant.thumb,blocks,finish:selectedFinish});
+    cart.push({key,mcode:design.mcode,name:design.name,vid:variant.id,vlabel:variant.vlabel,thumb:variant.thumb,blocks,finish:selectedFinish,spec:selectedSpec,insulation:selectedInsulation});
   }
   renderCart();
-  track('add_to_order',{design_code:design.mcode,variant:design.mcode+'-'+variant.vlabel,meta:{blocks,meters:blocksToMeters(blocks),tiles:blocksToTiles(blocks),finish:selectedFinish}});
+  track('add_to_order',{design_code:design.mcode,variant:design.mcode+'-'+variant.vlabel,meta:{blocks,meters:blocksToMeters(blocks),tiles:blocksToTiles(blocks),finish:selectedFinish,spec:selectedSpec,insulation:selectedInsulation}});
 }
 document.getElementById('drawerBar').addEventListener('click',()=>{
   const b=document.getElementById('drawerBody');b.classList.toggle('open');
@@ -1120,7 +1166,7 @@ function renderCart(){
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><span class="cart-swatch-mini" style="background-image:url('${item.thumb}')"></span>${item.mcode} ${item.name}</td>
       <td>${item.mcode.split('-')[1]}-${item.vlabel}</td>
-      <td style="text-transform:capitalize;">${item.finish||'matt'}</td>
+      <td style="text-transform:capitalize;">${item.finish||'matt'} · ${item.spec||'PPC'} · ${item.insulation||'Standard'}</td>
       <td>${fmt(item.blocks)}</td><td>${fmt(meters)}</td><td>${fmt(tiles)}</td><td>${fmt(sqft)}</td>
       <td><button class="cart-remove" data-idx="${idx}">remove</button></td>`;
     body.appendChild(tr);
