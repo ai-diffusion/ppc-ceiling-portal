@@ -78,6 +78,14 @@ tr:hover td{background:var(--ink-2);}
 .customer-row{cursor:pointer;}
 .customer-row.active td{background:var(--ink-2);border-left:2px solid var(--walnut);}
 .loading{font-family:var(--mono);font-size:12px;color:var(--text-soft);padding:20px;text-align:center;}
+.po-btn{background:var(--walnut);color:#fff;border:none;padding:5px 10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.02em;cursor:pointer;white-space:nowrap;}
+.po-btn:hover{background:#6B4423;}
+@media print{
+  body>*{display:none !important;}
+  #poModal{display:block !important;position:static !important;background:#fff !important;}
+  #poModal>div{box-shadow:none !important;width:100% !important;max-height:none !important;}
+  #poModal>div>div:first-child{display:none !important;}
+}
 </style>
 </head>
 <body>
@@ -122,7 +130,7 @@ tr:hover td{background:var(--ink-2);}
     </div>
     <div class="section">
       <div class="section-head"><h2>Most-Added Colours</h2><span class="hint">add_to_order events</span></div>
-      <div class="section-body"><table id="colorTable"><thead><tr><th>Colour</th><th>Adds</th><th>Rolls</th></tr></thead><tbody id="colorBody"></tbody></table></div>
+      <div class="section-body"><table id="colorTable"><thead><tr><th>Colour</th><th>Adds</th><th>Blocks</th><th>CFB Boards</th></tr></thead><tbody id="colorBody"></tbody></table></div>
     </div>
   </div>
 
@@ -141,11 +149,33 @@ tr:hover td{background:var(--ink-2);}
   </div>
 
   <div class="section">
-    <div class="section-head"><h2>Orders</h2><span class="hint">submitted through the portal</span></div>
+    <div class="section-head"><h2>Orders</h2><span class="hint">click an order to see line items with supplier codes</span></div>
     <div class="section-body">
       <table id="orderTable"><thead><tr>
-        <th>When</th><th>Customer</th><th>Type</th><th>Rolls</th><th>Tiles</th><th>Sq ft</th><th>Items</th>
+        <th>When</th><th>Customer</th><th>Type</th><th>Blocks</th><th>Tiles</th><th>Sq ft</th><th>Items</th><th>Supplier PO</th>
       </tr></thead><tbody id="orderBody"></tbody></table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>Order Line Items — Procurement View</h2><span class="hint">supplier codes for placing orders · admin-only</span></div>
+    <div class="section-body">
+      <table id="itemsTable"><thead><tr>
+        <th>Order date</th><th>Customer</th><th>Design (Client → Baaya)</th><th>Client code</th><th>Supplier code</th><th>Client colour</th><th>Supplier colour</th><th>Blocks (500kg)</th><th>Metres</th><th>CFB Boards</th>
+      </tr></thead><tbody id="itemsBody"></tbody></table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2>Master Code List — Supplier Reference</h2>
+      <button class="po-btn" id="printMasterBtn">⎙ Print master list</button>
+    </div>
+    <div class="section-body">
+      <div class="muted" style="font-family:var(--mono);font-size:11px;margin:2px 0 10px;">Permanent decode of every design. House name &amp; masked code = what the client sees. Baaya name &amp; supplier code = what you order. Keep this private.</div>
+      <table id="masterTable"><thead><tr>
+        <th>Design (Client → Baaya)</th><th>Client code</th><th>Supplier code</th>
+      </tr></thead><tbody id="masterBody"></tbody></table>
     </div>
   </div>
 
@@ -195,6 +225,7 @@ function onAuthed(){
 }
 document.getElementById('logoutBtn').addEventListener('click',async()=>{await sb.auth.signOut();location.reload();});
 document.getElementById('refreshBtn').addEventListener('click',loadAll);
+document.addEventListener('click',(e)=>{ if(e.target && e.target.id==='printMasterBtn') printMasterList(); });
 (async()=>{ const {data}=await sb.auth.getSession(); if(data.session){
   const {data:prof}=await sb.from('profiles').select('is_admin').eq('id',data.session.user.id).single();
   if(prof&&prof.is_admin){ session=data.session; onAuthed(); }
@@ -202,15 +233,17 @@ document.getElementById('refreshBtn').addEventListener('click',loadAll);
 
 // ==== DATA ====
 async function loadAll(){
-  const [ev,or_,it,pr]=await Promise.all([
+  const [ev,or_,it,pr,cm]=await Promise.all([
     sb.from('analytics_events').select('*').order('created_at',{ascending:false}).limit(5000),
     sb.from('orders').select('*').order('created_at',{ascending:false}).limit(1000),
     sb.from('order_items').select('*').limit(5000),
-    sb.from('profiles').select('*').limit(1000)
+    sb.from('profiles').select('*').limit(1000),
+    sb.from('code_map').select('*').order('real_code',{ascending:true})
   ]);
-  cache.events=ev.data||[]; cache.orders=or_.data||[]; cache.items=it.data||[]; cache.profiles=pr.data||[];
-  renderKPIs(); renderCustomers(); renderDesigns(); renderColors(); renderOrders(); renderFeed(); populateHeatSelect();
+  cache.events=ev.data||[]; cache.orders=or_.data||[]; cache.items=it.data||[]; cache.profiles=pr.data||[]; cache.codemap=cm.data||[];
+  renderKPIs(); renderCustomers(); renderDesigns(); renderColors(); renderOrders(); renderItems(); renderMasterList(); renderFeed(); populateHeatSelect();
 }
+function baayaNameFor(mcode){ const r=(cache.codemap||[]).find(c=>c.masked_code===mcode); return r?(r.baaya_name||'—'):'—'; }
 function profileFor(uid){ return cache.profiles.find(p=>p.id===uid); }
 function emailFor(uid){ const p=profileFor(uid); return p?(p.email||p.full_name||uid.slice(0,8)):(uid?uid.slice(0,8):'anon'); }
 
@@ -218,7 +251,7 @@ function renderKPIs(){
   const customers=cache.profiles.filter(p=>!p.is_admin).length;
   const totalEvents=cache.events.length;
   const orders=cache.orders.length;
-  const totalRolls=cache.orders.reduce((s,o)=>s+Number(o.total_rolls||0),0);
+  const totalBlocks=cache.orders.reduce((s,o)=>s+Number(o.total_blocks||0),0);
   const totalTiles=cache.orders.reduce((s,o)=>s+Number(o.total_tiles||0),0);
   // total active time from heartbeats (max active_ms per session)
   const bySess={};
@@ -228,7 +261,7 @@ function renderKPIs(){
   const totalActive=Object.values(bySess).reduce((s,v)=>s+v,0);
   const kpis=[
     ['Customers',fmt(customers),'registered'],
-    ['Orders',fmt(orders),fmt(totalRolls)+' rolls · '+fmt(totalTiles)+' tiles'],
+    ['Orders',fmt(orders),fmt(totalBlocks)+' blocks · '+fmt(totalTiles)+' CFB boards'],
     ['Design views',fmt(cache.events.filter(e=>e.event_type==='design_view').length),'opened detail'],
     ['Total events',fmt(totalEvents),'tracked'],
     ['Engaged time',fmtTime(totalActive),'across sessions'],
@@ -286,28 +319,219 @@ function renderDesigns(){
     :'<tr><td colspan="3" class="muted">No views yet.</td></tr>';
 }
 function renderColors(){
-  const counts={},rolls={};
-  cache.events.filter(e=>e.event_type==='add_to_order'&&e.variant).forEach(e=>{counts[e.variant]=(counts[e.variant]||0)+1;rolls[e.variant]=(rolls[e.variant]||0)+(e.meta?.rolls||0);});
+  const counts={},blocksAdded={},tilesAdded={};
+  cache.events.filter(e=>e.event_type==='add_to_order'&&e.variant).forEach(e=>{
+    counts[e.variant]=(counts[e.variant]||0)+1;
+    blocksAdded[e.variant]=(blocksAdded[e.variant]||0)+(e.meta?.blocks||0);
+    tilesAdded[e.variant]=(tilesAdded[e.variant]||0)+(e.meta?.tiles||0);
+  });
   const arr=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  document.getElementById('colorBody').innerHTML=arr.length?arr.map(([v,n])=>`<tr><td><span class="tag">${v}</span></td><td class="num">${n}</td><td class="num">${fmt(rolls[v]||0)}</td></tr>`).join('')
-    :'<tr><td colspan="3" class="muted">No colours added yet.</td></tr>';
+  document.getElementById('colorBody').innerHTML=arr.length?arr.map(([v,n])=>`<tr><td><span class="tag">${v}</span></td><td class="num">${n}</td><td class="num">${fmt(blocksAdded[v]||0)}</td><td class="num">${fmt(tilesAdded[v]||0)}</td></tr>`).join('')
+    :'<tr><td colspan="4" class="muted">No colours added yet.</td></tr>';
 }
 function renderOrders(){
   document.getElementById('orderBody').innerHTML=cache.orders.length?cache.orders.map(o=>{
     const items=cache.items.filter(i=>i.order_id===o.id).length;
     return `<tr><td class="muted">${ago(o.created_at)}</td><td class="email-cell">${emailFor(o.user_id)}</td>
-      <td><span class="tag">${o.order_type}</span></td><td class="num">${fmt(o.total_rolls)}</td>
-      <td class="num">${fmt(o.total_tiles)}</td><td class="num">${fmt(o.total_sqft)}</td><td class="num">${items}</td></tr>`;
-  }).join(''):'<tr><td colspan="7" class="muted">No orders yet.</td></tr>';
+      <td><span class="tag">${o.order_type}</span></td><td class="num">${fmt(o.total_blocks)}</td>
+      <td class="num">${fmt(o.total_tiles)}</td><td class="num">${fmt(o.total_sqft)}</td><td class="num">${items}</td>
+      <td><button class="po-btn" data-oid="${o.id}">⤓ Export PO</button></td></tr>`;
+  }).join(''):'<tr><td colspan="8" class="muted">No orders yet.</td></tr>';
+  document.querySelectorAll('.po-btn').forEach(b=>b.addEventListener('click',()=>exportPO(b.dataset.oid)));
 }
+
+// ===== Supplier PO export (real codes only) =====
+function poDate(){ const d=new Date(); return d.toISOString().slice(0,10); }
+function buildPO(order){
+  const items=cache.items.filter(i=>i.order_id===order.id);
+  const poNo='PO-'+order.id.slice(0,8).toUpperCase()+'-'+poDate().replace(/-/g,'');
+  const cust=profileFor(order.user_id);
+  const rows=items.map(i=>{
+    const blocks = (i.qty_blocks!=null && i.qty_blocks!=='') ? Number(i.qty_blocks)
+                  : (i.qty_length_m!=null ? Number(i.qty_length_m)/5333
+                  : (Number(i.qty_rolls||0)/22)); // legacy fallback for pre-metres orders
+    const meters = (i.qty_length_m!=null && i.qty_length_m!=='') ? Number(i.qty_length_m) : blocks*5333;
+    return {
+      real_code:i.real_code||'(unmapped)',
+      real_variant:i.real_variant||'(unmapped)',
+      name:baayaNameFor(i.design_code)!=='—' ? baayaNameFor(i.design_code) : (i.design_name||''),
+      client_name:i.design_name||'',
+      blocks, meters,
+      tiles:Number(i.qty_tiles||0),
+      sqft:Number(i.sqft||i.qty_tiles*16||0)
+    };
+  });
+  const totBlocks=rows.reduce((s,r)=>s+r.blocks,0);
+  const totMeters=rows.reduce((s,r)=>s+r.meters,0);
+  const totTiles=rows.reduce((s,r)=>s+r.tiles,0);
+  const totKg=totBlocks*500;
+  return {poNo, order, cust, rows, totBlocks, totMeters, totTiles, totKg, date:poDate()};
+}
+function exportPO(orderId){
+  const order=cache.orders.find(o=>o.id===orderId); if(!order) return;
+  const po=buildPO(order);
+  showPOModal(po);
+}
+function showPOModal(po){
+  let modal=document.getElementById('poModal');
+  if(!modal){
+    modal=document.createElement('div'); modal.id='poModal';
+    modal.style.cssText='position:fixed;inset:0;background:rgba(15,18,22,.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;';
+    document.body.appendChild(modal);
+  }
+  const rowsHtml=po.rows.map(r=>`<tr>
+    <td style="border:1px solid #ccc;padding:7px 9px;font-family:monospace;font-weight:600;">${r.real_code}</td>
+    <td style="border:1px solid #ccc;padding:7px 9px;font-family:monospace;">${r.real_variant}</td>
+    <td style="border:1px solid #ccc;padding:7px 9px;">${r.name}<br><span style="font-size:10px;color:#999;">(client calls this: ${r.client_name})</span></td>
+    <td style="border:1px solid #ccc;padding:7px 9px;text-align:right;font-weight:700;">${r.blocks%1===0?fmt(r.blocks):r.blocks.toFixed(1)}</td>
+    <td style="border:1px solid #ccc;padding:7px 9px;text-align:right;">${fmt(r.blocks*500)}</td>
+    <td style="border:1px solid #ccc;padding:7px 9px;text-align:right;">${fmt(r.meters)}</td>
+    <td style="border:1px solid #ccc;padding:7px 9px;text-align:right;">${fmt(r.tiles)}</td>
+  </tr>`).join('');
+  modal.innerHTML=`
+    <div style="background:#fff;color:#111;width:min(760px,100%);max-height:90vh;overflow:auto;">
+      <div style="display:flex;justify-content:flex-end;gap:8px;padding:10px 14px;border-bottom:1px solid #eee;position:sticky;top:0;background:#fff;">
+        <button onclick="copyPOText('${po.order.id}')" style="padding:8px 12px;border:1px solid #999;background:#fff;font-family:monospace;font-size:12px;cursor:pointer;">Copy as text</button>
+        <button onclick="downloadPOCsv('${po.order.id}')" style="padding:8px 12px;border:1px solid #999;background:#fff;font-family:monospace;font-size:12px;cursor:pointer;">Download CSV</button>
+        <button onclick="window.print()" style="padding:8px 12px;border:1px solid #999;background:#fff;font-family:monospace;font-size:12px;cursor:pointer;">Print / PDF</button>
+        <button onclick="document.getElementById('poModal').remove()" style="padding:8px 12px;border:none;background:#8C5A2B;color:#fff;font-family:monospace;font-size:12px;cursor:pointer;">Close</button>
+      </div>
+      <div id="poSheet" style="padding:34px 40px;font-family:Arial,sans-serif;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #8C5A2B;padding-bottom:14px;margin-bottom:20px;">
+          <div>
+            <div style="font-size:20px;font-weight:700;">PURCHASE ORDER</div>
+            <div style="font-size:12px;color:#555;margin-top:4px;">Jit Polycoat Enterprise · Palghar, Maharashtra, India</div>
+          </div>
+          <div style="text-align:right;font-size:12px;font-family:monospace;">
+            <div><b>${po.poNo}</b></div>
+            <div>Date: ${po.date}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:40px;font-size:12px;margin-bottom:20px;">
+          <div><div style="color:#888;text-transform:uppercase;font-size:10px;letter-spacing:.05em;">Supplier</div><div style="margin-top:3px;">Baaya Decor<br>(decor paper — printed base)</div></div>
+          <div><div style="color:#888;text-transform:uppercase;font-size:10px;letter-spacing:.05em;">Internal ref</div><div style="margin-top:3px;font-family:monospace;">Client: ${po.cust?.company||po.cust?.email||'—'}<br>Order type: ${po.order.order_type}</div></div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead><tr style="background:#f2ede1;">
+            <th style="border:1px solid #ccc;padding:8px 9px;text-align:left;">Design code</th>
+            <th style="border:1px solid #ccc;padding:8px 9px;text-align:left;">Variant</th>
+            <th style="border:1px solid #ccc;padding:8px 9px;text-align:left;">Design</th>
+            <th style="border:1px solid #ccc;padding:8px 9px;text-align:right;">Blocks</th>
+            <th style="border:1px solid #ccc;padding:8px 9px;text-align:right;">Print kg</th>
+            <th style="border:1px solid #ccc;padding:8px 9px;text-align:right;">Metres</th>
+            <th style="border:1px solid #ccc;padding:8px 9px;text-align:right;">CFB Boards (4×4)</th>
+          </tr></thead>
+          <tbody>${rowsHtml}</tbody>
+          <tfoot><tr style="font-weight:700;background:#f7f4ec;">
+            <td colspan="3" style="border:1px solid #ccc;padding:8px 9px;">Total</td>
+            <td style="border:1px solid #ccc;padding:8px 9px;text-align:right;">${po.totBlocks%1===0?fmt(po.totBlocks):po.totBlocks.toFixed(1)}</td>
+            <td style="border:1px solid #ccc;padding:8px 9px;text-align:right;">${fmt(po.totKg)}</td>
+            <td style="border:1px solid #ccc;padding:8px 9px;text-align:right;">${fmt(po.totMeters)}</td>
+            <td style="border:1px solid #ccc;padding:8px 9px;text-align:right;">${fmt(po.totTiles)}</td>
+          </tr></tfoot>
+        </table>
+        <div style="font-size:11px;color:#666;margin-top:16px;line-height:1.6;">
+          Order basis: 1 block = 500 kg print run = 5,333 m at 1220 mm width = 70,033 sq ft = 4,377 CFB boards (4′×4′). Codes shown are supplier design references.<br>
+          Confirm current stock, printing rate (₹100/kg standard designs; ₹300/kg custom), and lead time before finalising.
+        </div>
+      </div>
+    </div>`;
+}
+function copyPOText(orderId){
+  const order=cache.orders.find(o=>o.id===orderId); const po=buildPO(order);
+  const bstr=n=>String(n%1===0?fmt(n):n.toFixed(1));
+  let t=`PURCHASE ORDER  ${po.poNo}\nDate: ${po.date}\nSupplier: Baaya Decor\nClient ref: ${po.cust?.company||po.cust?.email||'-'} (${po.order.order_type})\n\n`;
+  t+='Code        Variant     Design                 Blocks  PrintKg   Metres   Boards\n';
+  po.rows.forEach(r=>{ t+=`${(r.real_code).padEnd(11)} ${(r.real_variant).padEnd(11)} ${(r.name).padEnd(22)} ${bstr(r.blocks).padStart(6)} ${String(fmt(r.blocks*500)).padStart(7)} ${String(fmt(r.meters)).padStart(8)} ${String(fmt(r.tiles)).padStart(7)}\n`; });
+  t+=`\nTOTAL${' '.repeat(41)}${bstr(po.totBlocks).padStart(6)} ${String(fmt(po.totKg)).padStart(7)} ${String(fmt(po.totMeters)).padStart(8)} ${String(fmt(po.totTiles)).padStart(7)}\n`;
+  t+='\nOrder basis: 1 block = 500 kg print run = 5,333 m @ 1220 mm width = 70,033 sq ft = 4,377 CFB boards (4x4).';
+  navigator.clipboard.writeText(t).then(()=>alert('PO copied to clipboard — paste into WhatsApp/email to Baaya.'));
+}
+function downloadPOCsv(orderId){
+  const order=cache.orders.find(o=>o.id===orderId); const po=buildPO(order);
+  let csv='PO Number,'+po.poNo+'\nDate,'+po.date+'\nSupplier,Baaya Decor\nClient Ref,'+(po.cust?.company||po.cust?.email||'-')+'\nOrder Type,'+po.order.order_type+'\n\n';
+  csv+='Design Code,Variant,Design Name,Blocks,Print kg,Metres,CFB Boards\n';
+  po.rows.forEach(r=>{ csv+=`${r.real_code},${r.real_variant},"${r.name}",${r.blocks},${r.blocks*500},${r.meters},${r.tiles}\n`; });
+  csv+=`Total,,,${po.totBlocks},${po.totKg},${po.totMeters},${po.totTiles}\n`;
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=po.poNo+'.csv'; a.click();
+}
+
+function renderItems(){
+  const orderById={}; cache.orders.forEach(o=>orderById[o.id]=o);
+  const items=cache.items.slice().sort((a,b)=>{
+    const ta=orderById[a.order_id]?.created_at||''; const tb=orderById[b.order_id]?.created_at||'';
+    return tb.localeCompare(ta);
+  });
+  document.getElementById('itemsBody').innerHTML=items.length?items.map(i=>{
+    const o=orderById[i.order_id];
+    const blocks = (i.qty_blocks!=null && i.qty_blocks!=='') ? Number(i.qty_blocks)
+                 : (i.qty_length_m!=null ? Number(i.qty_length_m)/5333
+                 : (Number(i.qty_rolls||0)/22)); // legacy fallback
+    const meters = (i.qty_length_m!=null && i.qty_length_m!=='') ? Number(i.qty_length_m) : blocks*5333;
+    return `<tr>
+      <td class="muted">${o?ago(o.created_at):'—'}</td>
+      <td class="email-cell">${o?emailFor(o.user_id):'—'}</td>
+      <td><div style="line-height:1.5;"><span>${i.design_name||'—'}</span><span class="muted"> → </span><span style="color:var(--gold);font-weight:600;">${baayaNameFor(i.design_code)}</span></div></td>
+      <td><span class="tag">${i.design_code||'—'}</span></td>
+      <td><span class="tag" style="border-color:var(--walnut);color:var(--gold);">${i.real_code||'—'}</span></td>
+      <td class="muted">${i.variant||'—'}</td>
+      <td><span class="num" style="color:var(--gold);">${i.real_variant||'—'}</span></td>
+      <td class="num" style="color:var(--gold);">${blocks%1===0?fmt(blocks):blocks.toFixed(1)}</td>
+      <td class="num">${fmt(meters)}</td>
+      <td class="num">${fmt(i.qty_tiles)}</td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="10" class="muted">No line items yet.</td></tr>';
+}
+function renderMasterList(){
+  const cm=(cache.codemap||[]).slice();
+  // attach series from DESIGN thumbs mapping if available; else blank. We derive series from masked prefix isn't reliable, so leave series from a small lookup.
+  document.getElementById('masterBody').innerHTML=cm.length?cm.map(c=>`
+    <tr>
+      <td><span>${c.house_name||'—'}</span><span class="muted"> → </span><span style="color:var(--gold);font-weight:600;">${c.baaya_name||'—'}</span></td>
+      <td><span class="tag">${c.masked_code}</span></td>
+      <td><span class="tag" style="border-color:var(--walnut);color:var(--gold);">${c.real_code}</span></td>
+    </tr>`).join(''):'<tr><td colspan="3" class="muted">Code map not loaded.</td></tr>';
+}
+function printMasterList(){
+  const cm=(cache.codemap||[]).slice();
+  const rows=cm.map(c=>`<tr>
+    <td style="border:1px solid #ccc;padding:6px 9px;">${c.house_name||'—'} <span style="color:#999;">→</span> <b>${c.baaya_name||'—'}</b></td>
+    <td style="border:1px solid #ccc;padding:6px 9px;font-family:monospace;">${c.masked_code}</td>
+    <td style="border:1px solid #ccc;padding:6px 9px;font-family:monospace;font-weight:700;">${c.real_code}</td>
+  </tr>`).join('');
+  let modal=document.getElementById('poModal');
+  if(!modal){ modal=document.createElement('div'); modal.id='poModal';
+    modal.style.cssText='position:fixed;inset:0;background:rgba(15,18,22,.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;';
+    document.body.appendChild(modal); }
+  modal.innerHTML=`<div style="background:#fff;color:#111;width:min(720px,100%);max-height:90vh;overflow:auto;">
+    <div style="display:flex;justify-content:flex-end;gap:8px;padding:10px 14px;border-bottom:1px solid #eee;position:sticky;top:0;background:#fff;">
+      <button onclick="window.print()" style="padding:8px 12px;border:1px solid #999;background:#fff;font-family:monospace;font-size:12px;cursor:pointer;">Print / PDF</button>
+      <button onclick="document.getElementById('poModal').remove()" style="padding:8px 12px;border:none;background:#8C5A2B;color:#fff;font-family:monospace;font-size:12px;cursor:pointer;">Close</button>
+    </div>
+    <div id="poSheet" style="padding:34px 40px;font-family:Arial,sans-serif;">
+      <div style="font-size:20px;font-weight:700;border-bottom:2px solid #8C5A2B;padding-bottom:12px;margin-bottom:18px;">MASTER CODE LIST — SUPPLIER REFERENCE (CONFIDENTIAL)</div>
+      <div style="font-size:11px;color:#666;margin-bottom:14px;">Jit Polycoat Enterprise · Do not share. Design name reads Client name → Baaya name. Code reads Client code / Supplier code.</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead><tr style="background:#f2ede1;">
+          <th style="border:1px solid #ccc;padding:7px 9px;text-align:left;">Design (Client → Baaya)</th>
+          <th style="border:1px solid #ccc;padding:7px 9px;text-align:left;">Client code</th>
+          <th style="border:1px solid #ccc;padding:7px 9px;text-align:left;">Supplier code</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div></div>`;
+}
+
 function renderFeed(){
   const feed=cache.events.slice(0,60);
   document.getElementById('feedBody').innerHTML=feed.map(e=>{
     let detail='';
     if(e.event_type==='mouse_path')detail=`${e.meta?.points?.length||0} points`;
     else if(e.event_type==='view_mode')detail=e.meta?.mode||'';
-    else if(e.event_type==='add_to_order')detail=`${e.meta?.rolls||0} rolls`;
-    else if(e.event_type==='order_submitted')detail=`${e.meta?.total_rolls||0} rolls`;
+    else if(e.event_type==='add_to_order')detail=`${e.meta?.blocks||0} block(s) / ${fmt(e.meta?.tiles||0)} boards`;
+    else if(e.event_type==='order_submitted')detail=`${e.meta?.total_blocks||0} block(s) / ${fmt(e.meta?.total_tiles||0)} boards`;
     else if(e.event_type==='heartbeat')detail=fmtTime(e.meta?.active_ms);
     else if(e.event_type==='scroll_depth')detail=(e.meta?.pct||0)+'%';
     return `<tr><td class="muted">${ago(e.created_at)}</td><td class="email-cell">${emailFor(e.user_id)}</td>

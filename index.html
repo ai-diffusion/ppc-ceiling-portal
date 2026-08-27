@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Polymer Paper Composite — Ceiling Collection | Order Portal</title>
+<title>Decorative Cement Fiber Board Trade Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -63,6 +63,8 @@ input{font-family:inherit;}
 .hero{background:linear-gradient(180deg,var(--walnut-tint),var(--paper));border-bottom:1px solid var(--line);}
 .hero-inner{max-width:1360px;margin:0 auto;padding:30px 24px 22px;}
 .hero h1{font-family:var(--disp);font-size:27px;font-weight:600;margin:0 0 6px;letter-spacing:-.01em;}
+.welcome-line{font-family:var(--mono);font-size:12.5px;color:var(--walnut-deep);letter-spacing:.02em;margin-bottom:8px;min-height:16px;}
+.welcome-line b{color:var(--ink);}
 .hero p{max-width:640px;color:var(--ink-soft);font-size:14px;margin:0 0 18px;}
 .terms-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);background:var(--card);}
 .term-block{padding:14px 22px;}
@@ -263,8 +265,8 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
 <div class="auth-gate mode-login" id="authGate">
   <div class="auth-card">
     <div class="auth-head">
-      <div class="auth-brand">POLYMER PAPER COMPOSITE</div>
-      <div class="auth-brand-sub">Ceiling Collection · Trade Order Portal</div>
+      <div class="auth-brand">DECORATIVE CEMENT FIBER BOARD</div>
+      <div class="auth-brand-sub">Trade Portal</div>
     </div>
     <div class="auth-body">
       <div class="auth-tabs">
@@ -298,8 +300,8 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
 <div class="specbar">
   <div class="specbar-inner">
     <div class="brand">
-      <span class="brand-mark">POLYMER PAPER COMPOSITE</span>
-      <span class="brand-sub">Ceiling Collection</span>
+      <span class="brand-mark">DECORATIVE CEMENT FIBER BOARD</span>
+      <span class="brand-sub">Trade Portal</span>
     </div>
     <div class="spec-right">
       <span class="user-chip">Signed in as <b id="userLabel">—</b></span>
@@ -311,18 +313,19 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
 <!-- ===== HERO ===== -->
 <div class="hero">
   <div class="hero-inner">
+    <div class="welcome-line" id="welcomeLine"></div>
     <h1>Choose your ceiling designs</h1>
-    <p>Explore the wood-grain collection — every design in all its colour options. Zoom in to inspect the grain, preview it as a 4×4 ft tile or across a full ceiling, and build your order in rolls.</p>
+    <p>Explore the wood-grain collection — every design in all its colour options. Zoom in to inspect the grain, preview it as a 4×4 ft tile or across a full ceiling, and build your order in print-blocks.</p>
     <div class="terms-grid">
       <div class="term-block">
         <div class="term-eyebrow">Your agreed opening order</div>
         <div class="term-value">200,000 tiles</div>
-        <div class="term-sub">3,200,000 sq ft · one-time · ≈ 976 rolls (205 tiles/roll)</div>
+        <div class="term-sub">3,200,000 sq ft · one-time · ≈ 46 design blocks</div>
       </div>
       <div class="term-block">
         <div class="term-eyebrow">Recurring — every 2 months</div>
         <div class="term-value">100,000 tiles min.</div>
-        <div class="term-sub">1,600,000 sq ft · ≈ 488 rolls per cycle</div>
+        <div class="term-sub">1,600,000 sq ft · ≈ 23 design blocks per cycle</div>
       </div>
     </div>
   </div>
@@ -430,15 +433,16 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
         <div class="info-specs">
           <div class="info-spec-row"><span>Selected colour</span><span id="infoVariant">—</span></div>
           <div class="info-spec-row"><span>Tile size</span><span>4′-0″ × 4′-0″ / 16 sq ft</span></div>
-          <div class="info-spec-row"><span>Roll format</span><span>250 m · ~36 kg · 205 tiles/roll</span></div>
+          <div class="info-spec-row"><span>Order unit</span><span>1 design block = 5,333 m</span></div>
+          <div class="info-spec-row"><span>Coverage per block</span><span>70,033 sq ft ≈ 4,377 CFB boards</span></div>
           <div class="info-spec-row"><span>Thickness</span><span>0.10 mm</span></div>
           <div class="info-spec-row"><span>Composition</span><span>PVC-free / VOC-free</span></div>
         </div>
         <div class="qty-row">
-          <span class="qty-label">Rolls</span>
+          <span class="qty-label">Blocks</span>
           <div class="qty-input-group">
             <button class="qty-step" id="qtyMinus">–</button>
-            <input class="qty-input" id="qtyInput" value="10" inputmode="numeric">
+            <input class="qty-input" id="qtyInput" value="1" inputmode="numeric">
             <button class="qty-step" id="qtyPlus">+</button>
           </div>
         </div>
@@ -467,13 +471,13 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
   </div>
 </div>
 
-<footer>Polymer Paper Composite — Ceiling Collection · Trade Order Portal. All designs and colour references are proprietary.</footer>
+<footer>Decorative Cement Fiber Board Trade Portal · Jit Polycoat Enterprise. All designs and colour references are proprietary.</footer>
 
 <!-- ===== DRAWER ===== -->
 <div class="drawer">
   <div class="drawer-bar" id="drawerBar">
     <div class="drawer-left">
-      <div class="drawer-count"><b id="drawerRollCount">0</b> rolls &nbsp;·&nbsp; <span id="drawerTiles">0</span> tiles &nbsp;·&nbsp; <span id="drawerSqft">0</span> sq ft</div>
+      <div class="drawer-count"><b id="drawerRollCount">0</b> blocks &nbsp;·&nbsp; <span id="drawerTiles">0</span> tiles &nbsp;·&nbsp; <span id="drawerSqft">0</span> sq ft</div>
       <div class="progress-wrap">
         <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
         <div class="progress-label" id="progressLabel">0% of opening-order minimum</div>
@@ -487,10 +491,10 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
       <button class="otbtn" data-ot="recurring">Recurring order (min. 100,000 tiles / 2 mo.)</button>
     </div>
     <table class="cart-table">
-      <thead><tr><th>Design</th><th>Colour</th><th>Rolls</th><th>Tiles</th><th>Sq ft</th><th></th></tr></thead>
+      <thead><tr><th>Design</th><th>Colour</th><th>Blocks</th><th>Metres</th><th>CFB Boards</th><th>Sq ft</th><th></th></tr></thead>
       <tbody id="cartBody"></tbody>
     </table>
-    <div class="cart-empty" id="cartEmpty">No designs added yet — open any design and add rolls.</div>
+    <div class="cart-empty" id="cartEmpty">No designs added yet — open any design and add blocks (1 block = 500 kg print run = 5,333 m).</div>
     <div class="drawer-actions">
       <button class="btn btn-primary" id="submitOrder">Submit order</button>
       <button class="btn btn-ghost" id="clearOrder">Clear</button>
@@ -503,8 +507,11 @@ footer{max-width:1360px;margin:0 auto;padding:26px 24px 100px;font-family:var(--
 // ====== CONFIG ======
 const SUPA_URL = "https://jzofcuonpbudcwvwwymu.supabase.co";
 const SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6b2ZjdW9ucGJ1ZGN3dnd3eW11Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3MzM5NzQsImV4cCI6MjEwMzMwOTk3NH0.sM4NK2ja9nhdSBc4mQA5ELl_g6GZZZ2AsHGzTTlHVyA";
-const TILES_PER_ROLL = 205;
-const TILE_SQFT = 16;
+const M_TO_FT = 3.280839895013123;
+const WIDTH_MM = 1220;            // roll width
+const WIDTH_FT = WIDTH_MM / 304.8; // ≈ 4.0026 ft — used for sq ft / board math
+const TILE_SQFT = 16;             // 4x4 ft CFB board
+const BLOCK_LENGTH_M = 5333;      // one design/colour print run (500 kg Baaya block)
 let DESIGNS = [];
 
 const sb = window.supabase.createClient(SUPA_URL, SUPA_ANON);
@@ -518,7 +525,15 @@ let zoomScale=1, panX=0, panY=0, dragging=false, dragStart=null;
 let roomSize=16, session=null, sessionId=null;
 
 function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
-function rollsToTiles(r){ return r*TILES_PER_ROLL; }
+function metersToSqft(m){ return m*M_TO_FT*WIDTH_FT; }
+function metersToTiles(m){ return metersToSqft(m)/TILE_SQFT; }
+function blocksToMeters(b){ return b*BLOCK_LENGTH_M; }
+function blocksToSqft(b){ return metersToSqft(blocksToMeters(b)); }
+function blocksToTiles(b){ return Math.round(metersToTiles(blocksToMeters(b))); }
+function blockLine(b){
+  const m=blocksToMeters(b), sqft=blocksToSqft(b), tiles=blocksToTiles(b);
+  return `${fmt(b)} design block${b===1?'':'s'} = ${fmt(m)} m = ${fmt(sqft)} sq ft = ${fmt(tiles)} CFB boards (4×4 ft)`;
+}
 
 // ====== ANALYTICS ======
 function newSessionId(){
@@ -609,8 +624,26 @@ function onAuthed(sess){
   document.getElementById('authGate').classList.add('hidden');
   const email=sess.user.email;
   document.getElementById('userLabel').textContent=email;
+  // Welcome message with the person's name
+  showWelcome(sess);
   window.__designsReady.then(()=>renderGallery());
   track('session_start',{meta:{ua:navigator.userAgent, vw:window.innerWidth, vh:window.innerHeight}});
+}
+async function showWelcome(sess){
+  let name = sess.user.user_metadata?.full_name || '';
+  let company = sess.user.user_metadata?.company || '';
+  // fall back to profile row if metadata is empty (e.g. older accounts)
+  if(!name){
+    try{
+      const {data:prof}=await sb.from('profiles').select('full_name,company').eq('id',sess.user.id).single();
+      if(prof){ name=prof.full_name||''; company=prof.company||''; }
+    }catch(e){}
+  }
+  const hour=new Date().getHours();
+  const greet = hour<12 ? 'Good morning' : hour<17 ? 'Good afternoon' : 'Good evening';
+  const who = name ? name : (sess.user.email.split('@')[0]);
+  const co = company ? ` · ${company}` : '';
+  document.getElementById('welcomeLine').innerHTML = `${greet}, <b>${who}</b>${co} — welcome to the Decorative Cement Fiber Board Trade Portal.`;
 }
 document.getElementById('logoutBtn').addEventListener('click', async ()=>{
   track('session_end',{meta:{active_ms:totalActive}});
@@ -644,12 +677,12 @@ function renderGallery(){
         <div class="card-cta">
           <div class="card-qty">
             <button data-qm>–</button>
-            <input data-qty value="10" inputmode="numeric">
+            <input data-qty value="1" inputmode="numeric">
             <button data-qp>+</button>
           </div>
-          <button class="card-add" data-add>Add rolls</button>
+          <button class="card-add" data-add>Add blocks</button>
         </div>
-        <div class="card-roll-note" data-rollnote>10 rolls = 2,050 tiles · 32,800 sq ft</div>
+        <div class="card-roll-note" data-rollnote>1 block = 5,333 m = 70,033 sq ft = 4,377 CFB boards</div>
       </div>`;
     // state: which variant selected on card
     let cardVar = main.id;
@@ -665,12 +698,12 @@ function renderGallery(){
         track('color_preview',{design_code:d.mcode, variant:d.mcode+'-'+v.vlabel});
       });
     });
-    // qty controls
+    // qty controls (in BLOCKS)
     const qi=card.querySelector('[data-qty]');
     const note=card.querySelector('[data-rollnote]');
     function updNote(){
-      const r=parseInt(qi.value,10)||0;
-      note.textContent=`${fmt(r)} rolls = ${fmt(rollsToTiles(r))} tiles · ${fmt(rollsToTiles(r)*TILE_SQFT)} sq ft`;
+      const b=parseInt(qi.value,10)||0;
+      note.textContent=blockLine(b);
     }
     card.querySelector('[data-qm]').addEventListener('click',(e)=>{e.stopPropagation();qi.value=Math.max(1,(parseInt(qi.value,10)||0)-1);updNote();});
     card.querySelector('[data-qp]').addEventListener('click',(e)=>{e.stopPropagation();qi.value=(parseInt(qi.value,10)||0)+1;updNote();});
@@ -680,11 +713,11 @@ function renderGallery(){
     const addBtn=card.querySelector('[data-add]');
     addBtn.addEventListener('click',(e)=>{
       e.stopPropagation();
-      const rolls=parseInt(qi.value,10)||0; if(rolls<=0) return;
+      const blocks=parseInt(qi.value,10)||0; if(blocks<=0) return;
       const v=d.variants.find(x=>x.id===cardVar);
-      addToCart(d,v,rolls);
+      addToCart(d,v,blocks);
       addBtn.textContent='✓ Added'; addBtn.classList.add('added');
-      setTimeout(()=>{addBtn.textContent='Add rolls';addBtn.classList.remove('added');},1200);
+      setTimeout(()=>{addBtn.textContent='Add blocks';addBtn.classList.remove('added');},1200);
     });
     // open detail on swatch/name click
     swatch.addEventListener('click',()=>openDetail(d,cardVar));
@@ -708,7 +741,7 @@ function openDetail(design,variantId){
   document.getElementById('infoName').textContent=design.name;
   document.getElementById('infoCode').textContent=design.mcode;
   document.getElementById('addedFlash').classList.remove('show');
-  document.getElementById('qtyInput').value=10;
+  document.getElementById('qtyInput').value=1;
   setVariant(variantId);
   setMode('swatch');
   renderVariantStrip();
@@ -802,27 +835,27 @@ document.getElementById('overlay').addEventListener('click',(e)=>{if(e.target.id
 
 // detail qty
 function updQtyConv(){
-  const r=parseInt(document.getElementById('qtyInput').value,10)||0;
-  document.getElementById('qtyConv').innerHTML=`<b>${fmt(r)} rolls</b> = ${fmt(rollsToTiles(r))} tiles = ${fmt(rollsToTiles(r)*TILE_SQFT)} sq ft<br>1 roll = 250 m · ~36 kg · 205 tiles (4×4 ft)`;
+  const b=parseInt(document.getElementById('qtyInput').value,10)||0;
+  document.getElementById('qtyConv').innerHTML=`<b>${fmt(b)} block${b===1?'':'s'}</b> = ${fmt(blocksToMeters(b))} m = ${fmt(blocksToSqft(b))} sq ft = ${fmt(blocksToTiles(b))} CFB boards (4×4 ft)<br>1 block = 500 kg print run = 5,333 m at 1220 mm width`;
 }
 document.getElementById('qtyInput').addEventListener('input',updQtyConv);
 document.getElementById('qtyMinus').addEventListener('click',()=>{const el=document.getElementById('qtyInput');el.value=Math.max(1,(parseInt(el.value,10)||0)-1);updQtyConv();});
 document.getElementById('qtyPlus').addEventListener('click',()=>{const el=document.getElementById('qtyInput');el.value=(parseInt(el.value,10)||0)+1;updQtyConv();});
 document.getElementById('addToOrder').addEventListener('click',()=>{
-  const rolls=parseInt(document.getElementById('qtyInput').value,10)||0; if(rolls<=0)return;
-  addToCart(activeDetail.design,currentVariant(),rolls);
+  const blocks=parseInt(document.getElementById('qtyInput').value,10)||0; if(blocks<=0)return;
+  addToCart(activeDetail.design,currentVariant(),blocks);
   document.getElementById('addedFlash').classList.add('show');
 });
 
-// ====== CART ======
-function addToCart(design,variant,rolls){
+// ====== CART (unit = BLOCKS) ======
+function addToCart(design,variant,blocks){
   const key=design.mcode+'|'+variant.id;
   const ex=cart.find(c=>c.key===key);
-  if(ex){ ex.rolls+=rolls; } else {
-    cart.push({key,mcode:design.mcode,name:design.name,vid:variant.id,vlabel:variant.vlabel,thumb:variant.thumb,rolls});
+  if(ex){ ex.blocks+=blocks; } else {
+    cart.push({key,mcode:design.mcode,name:design.name,vid:variant.id,vlabel:variant.vlabel,thumb:variant.thumb,blocks});
   }
   renderCart();
-  track('add_to_order',{design_code:design.mcode,variant:design.mcode+'-'+variant.vlabel,meta:{rolls,tiles:rollsToTiles(rolls)}});
+  track('add_to_order',{design_code:design.mcode,variant:design.mcode+'-'+variant.vlabel,meta:{blocks,meters:blocksToMeters(blocks),tiles:blocksToTiles(blocks)}});
 }
 document.getElementById('drawerBar').addEventListener('click',()=>{
   const b=document.getElementById('drawerBody');b.classList.toggle('open');
@@ -833,29 +866,32 @@ document.querySelectorAll('.otbtn').forEach(b=>{
 });
 function renderCart(){
   const body=document.getElementById('cartBody');body.innerHTML='';
-  let totalRolls=0;
+  let totalBlocks=0;
   cart.forEach((item,idx)=>{
-    totalRolls+=item.rolls;
-    const tiles=rollsToTiles(item.rolls);
+    totalBlocks+=item.blocks;
+    const meters=blocksToMeters(item.blocks);
+    const tiles=blocksToTiles(item.blocks);
+    const sqft=blocksToSqft(item.blocks);
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><span class="cart-swatch-mini" style="background-image:url('${item.thumb}')"></span>${item.mcode} ${item.name}</td>
       <td>${item.mcode.split('-')[1]}-${item.vlabel}</td>
-      <td>${fmt(item.rolls)}</td><td>${fmt(tiles)}</td><td>${fmt(tiles*TILE_SQFT)}</td>
+      <td>${fmt(item.blocks)}</td><td>${fmt(meters)}</td><td>${fmt(tiles)}</td><td>${fmt(sqft)}</td>
       <td><button class="cart-remove" data-idx="${idx}">remove</button></td>`;
     body.appendChild(tr);
   });
   document.getElementById('cartEmpty').style.display=cart.length?'none':'block';
   document.querySelectorAll('.cart-remove').forEach(btn=>btn.addEventListener('click',()=>{cart.splice(parseInt(btn.dataset.idx,10),1);renderCart();}));
-  const totalTiles=rollsToTiles(totalRolls);
-  document.getElementById('drawerRollCount').textContent=fmt(totalRolls);
+  const totalTiles=blocksToTiles(totalBlocks);
+  const totalSqft=blocksToSqft(totalBlocks);
+  document.getElementById('drawerRollCount').textContent=fmt(totalBlocks);
   document.getElementById('drawerTiles').textContent=fmt(totalTiles);
-  document.getElementById('drawerSqft').textContent=fmt(totalTiles*TILE_SQFT);
+  document.getElementById('drawerSqft').textContent=fmt(totalSqft);
   const min=orderType==='initial'?200000:100000;
   const pct=Math.min(100,(totalTiles/min)*100);
   document.getElementById('progressFill').style.width=pct+'%';
   document.getElementById('progressLabel').textContent=orderType==='initial'
-    ?`${pct.toFixed(0)}% of opening-order minimum (200,000 tiles)`
-    :`${pct.toFixed(0)}% of recurring minimum (100,000 tiles / 2 mo.)`;
+    ?`${pct.toFixed(0)}% of opening-order minimum (200,000 CFB boards)`
+    :`${pct.toFixed(0)}% of recurring minimum (100,000 CFB boards / 2 mo.)`;
 }
 document.getElementById('clearOrder').addEventListener('click',()=>{cart=[];renderCart();document.getElementById('submitMsg').textContent='';});
 
@@ -864,24 +900,26 @@ document.getElementById('submitOrder').addEventListener('click', async ()=>{
   const msg=document.getElementById('submitMsg');
   if(cart.length===0){ msg.className='submit-msg err'; msg.textContent='Add at least one design first.'; return; }
   msg.className='submit-msg'; msg.textContent='Submitting…';
-  const totalRolls=cart.reduce((s,i)=>s+i.rolls,0);
-  const totalTiles=rollsToTiles(totalRolls);
+  const totalBlocks=cart.reduce((s,i)=>s+i.blocks,0);
+  const totalMeters=blocksToMeters(totalBlocks);
+  const totalTiles=blocksToTiles(totalBlocks);
+  const totalSqft=blocksToSqft(totalBlocks);
   try{
     const {data:order,error:oerr}=await sb.from('orders').insert({
       user_id:session.user.id, order_type:orderType, status:'submitted',
-      total_tiles:totalTiles, total_sqft:totalTiles*TILE_SQFT, total_rolls:totalRolls
+      total_tiles:totalTiles, total_sqft:totalSqft, total_length_m:totalMeters, total_blocks:totalBlocks
     }).select().single();
     if(oerr) throw oerr;
     const items=cart.map(i=>({
       order_id:order.id, user_id:session.user.id, design_code:i.mcode, design_name:i.name,
-      variant:i.mcode.split('-')[1]+'-'+i.vlabel, qty_tiles:rollsToTiles(i.rolls),
-      qty_rolls:i.rolls, sqft:rollsToTiles(i.rolls)*TILE_SQFT
+      variant:i.mcode.split('-')[1]+'-'+i.vlabel, qty_tiles:blocksToTiles(i.blocks),
+      qty_length_m:blocksToMeters(i.blocks), qty_blocks:i.blocks, sqft:blocksToSqft(i.blocks)
     }));
     const {error:ierr}=await sb.from('order_items').insert(items);
     if(ierr) throw ierr;
-    track('order_submitted',{meta:{order_id:order.id,total_rolls:totalRolls,total_tiles:totalTiles,order_type:orderType,items:cart.length}});
+    track('order_submitted',{meta:{order_id:order.id,total_blocks:totalBlocks,total_length_m:totalMeters,total_tiles:totalTiles,order_type:orderType,items:cart.length}});
     msg.className='submit-msg ok';
-    msg.textContent=`✓ Order submitted (${fmt(totalRolls)} rolls / ${fmt(totalTiles)} tiles). Our team will follow up to confirm.`;
+    msg.textContent=`✓ Order submitted (${fmt(totalBlocks)} blocks / ${fmt(totalMeters)} m / ${fmt(totalTiles)} CFB boards). Our team will follow up to confirm.`;
     cart=[]; renderCart();
   }catch(e){ msg.className='submit-msg err'; msg.textContent='Could not submit: '+(e.message||'error'); }
 });
