@@ -628,23 +628,61 @@ let currentCollection = 'ceiling'; // 'ceiling' | 'nextgen' | 'natural'
 
 const sb = window.supabase.createClient(SUPA_URL, SUPA_ANON);
 
-// load design catalogs from external files (keeps HTML small for hosting)
-window.__designsReady = fetch('https://jzofcuonpbudcwvwwymu.supabase.co/storage/v1/object/public/designs/data/designs.json').then(r=>r.json()).then(d=>{DESIGNS=d;}).catch(e=>{console.error('designs load failed',e);});
+// load design catalogs from external CDN catalog.json (750 designs / 1587 colourways)
+const CDN_BASE = 'https://cdn.jsdelivr.net/gh/ai-diffusion/decorative-cfb-trade-portal@main/public';
+function processCatalog(rawItems){
+  return rawItems.map(item => {
+    const variants = (item.variants || []).map(v => {
+      let hi = v.hi || v.thumb || '';
+      let sheet = v.sheet || hi || '';
+      if(hi && hi.startsWith('/')) hi = CDN_BASE + hi;
+      if(sheet && sheet.startsWith('/')) sheet = CDN_BASE + sheet;
+      return {
+        id: v.id || '01',
+        vlabel: v.vlabel || v.id || '01',
+        hi: hi,
+        sheet: sheet,
+        sku: v.sku || ''
+      };
+    });
+    return {
+      mcode: item.mcode,
+      name: item.name || item.mcode,
+      series: (item.series || 'VOGUE').toUpperCase(),
+      variants: variants,
+      face: item.face || 'PPC',
+      supplier: item.supplier || 'Match Graphics'
+    };
+  });
+}
+
+window.__designsReady = fetch('https://cdn.jsdelivr.net/gh/ai-diffusion/decorative-cfb-trade-portal@main/public/catalog.json')
+  .then(r=>r.json())
+  .then(d=>{
+    DESIGNS = processCatalog(d);
+  })
+  .catch(e=>{
+    console.warn('CDN catalog load failed, using fallback', e);
+    return fetch('https://jzofcuonpbudcwvwwymu.supabase.co/storage/v1/object/public/designs/data/designs.json')
+      .then(r=>r.json())
+      .then(d=>{ DESIGNS = d; });
+  });
+
 window.__nextgenReady = fetch('https://jzofcuonpbudcwvwwymu.supabase.co/storage/v1/object/public/designs/data/nextgen_designs.json').then(r=>r.json()).then(d=>{
-  // wrap each single-image NextGen design into the same {variants:[...]} shape the UI expects
   NEXTGEN_DESIGNS = d.map(x=>({
     mcode:x.mcode, name:x.name, series:x.series,
     variants:[{id:'01', vlabel:'01', thumb:x.thumb, hi:x.sheet}],
     room:x.room
   }));
 }).catch(e=>{console.error('nextgen load failed',e);});
+
 window.__naturalReady = fetch('https://jzofcuonpbudcwvwwymu.supabase.co/storage/v1/object/public/designs/data/natural_designs.json').then(r=>r.json()).then(d=>{
-  NATURAL_DESIGNS = d; // already has multi-variant structure + room
+  NATURAL_DESIGNS = d;
 }).catch(e=>{console.error('natural load failed',e);});
 
 const COLLECTION_READY = {ceiling:()=>window.__designsReady, nextgen:()=>window.__nextgenReady, natural:()=>window.__naturalReady};
 const COLLECTION_CHIPS = {
-  ceiling: `<button class="chip active" data-series="ALL">All</button><button class="chip" data-series="SIGNATURE">Signature</button><button class="chip" data-series="ATELIER">Atelier</button>`,
+  ceiling: `<button class="chip active" data-series="ALL">All</button><button class="chip" data-series="VOGUE">Vogue</button><button class="chip" data-series="LINO">Lino</button><button class="chip" data-series="NATURAL">Natural</button><button class="chip" data-series="NXT">NXT</button><button class="chip" data-series="COLORPEDIA">Colorpedia</button><button class="chip" data-series="SIGNATURE">Signature</button><button class="chip" data-series="ATELIER">Atelier</button><button class="chip" data-series="INSULATION">Insulation</button>`,
   nextgen: `<button class="chip active" data-series="ALL">All</button><button class="chip" data-series="WOOD">Wood</button><button class="chip" data-series="PATTERN">Pattern</button>`,
   natural: `<button class="chip active" data-series="ALL">All</button><button class="chip" data-series="WOOD">Wood</button><button class="chip" data-series="STONE">Stone</button>`
 };
